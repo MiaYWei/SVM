@@ -1,6 +1,7 @@
 # Import the libraries
 import numpy as np
 import pandas as pd
+from scipy import stats
 from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import confusion_matrix, accuracy_score, classification_report, mean_absolute_error
 from sklearn.svm import SVC
@@ -29,42 +30,22 @@ for i in range(len(y)):
 
 y = methylated
 
-# select features using the training set only
+# Identify outliers in the training dataset
+z_scores = stats.zscore(X)
+abs_z_scores = np.abs(z_scores)
+filtered_entries = (abs_z_scores < 3).all(axis=1)
+X = X[filtered_entries]
+y = y[filtered_entries]
+print('Remove outliers', X.shape, y.shape)
+
+# Select features
 selector = SelectKBest(k=10)
 X_new = selector.fit_transform(X,y)
 print('Feature selection', X_new.shape, y.shape)
 
-# Identify outliers in the training dataset
-# solution 1:
-# from sklearn.svm import OneClassSVM
-# ee = OneClassSVM(nu=0.01)
-# yhat = ee.fit_predict(X)
-
-# solution 2:
-# from sklearn.ensemble import IsolationForest
-# iso = IsolationForest(contamination=0.1)
-# yhat = iso.fit_predict(X_train)
-
-# solution 3:
-# from sklearn.neighbors import LocalOutlierFactor
-# lof = LocalOutlierFactor()
-# yhat = lof.fit_predict(X_train)
-
-# solution 4:
-# identify outliers in the training dataset
-# from sklearn.covariance import EllipticEnvelope
-# ee = EllipticEnvelope(contamination=0.01)
-# yhat = ee.fit_predict(X_train)
-
-# Select all rows that are not outliers
-# mask = yhat != -1
-# X, y = X[mask, :], y[mask]
-# # Summarize the shape of the updated training dataset
-# print(X.shape,y.shape)
-
 ###################### Split Dataset ###########################
 # split into train and test sets
-X_train, X_test, y_train, y_test = train_test_split(X_new, y, test_size=0.20, random_state=1)
+X_train, X_test, y_train, y_test = train_test_split(X_new, y, test_size=0.20, random_state=42)
 
 ###################### Training Dataset ###########################
 # Standarize all features
