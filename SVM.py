@@ -117,6 +117,7 @@ from sklearn.metrics import roc_auc_score
 # calculate scores
 ns_auc = roc_auc_score(y_test, ns_probs)
 svm_auc = roc_auc_score(y_test, svm_probs)
+
 # summarize scores
 print('No Skill: ROC AUC=%.3f' % (ns_auc))
 print('SVM: ROC AUC=%.3f' % (svm_auc))
@@ -138,6 +139,26 @@ plt.show()
 FP_rate, TP_rate, thresholds = roc_curve(y_test, y_pred)
 roc_auc = auc(FP_rate, TP_rate)
 print('roc_auc', roc_auc)
+
+
+####################### PR Curve #####################
+from sklearn.metrics import precision_recall_curve
+from sklearn.metrics import f1_score
+svm_precision, svm_recall, _ = precision_recall_curve(y_test, svm_probs)
+svm_f1, svm_auc = f1_score(y_test, y_pred), auc(svm_recall, svm_precision)
+# summarize scores
+print('SVM: f1=%.3f auc=%.3f' % (svm_f1, svm_auc))
+# plot the precision-recall curves
+no_skill = len(y_test[y_test==1]) / len(y_test)
+plt.plot([0, 1], [no_skill, no_skill], linestyle='--', label='No Skill')
+plt.plot(svm_recall, svm_precision, marker='.', label='SVM')
+# axis labels
+plt.xlabel('Recall')
+plt.ylabel('Precision')
+# show the legend
+plt.legend()
+# show the plot
+plt.show()
 
 ###################### Evaluation Dataset ###########################
 # Evaluate predictions
