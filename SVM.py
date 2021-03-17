@@ -98,7 +98,7 @@ print('After oversampling',Counter(y_train))
 # Train the SVM model on the Training set
 #classifier = SVC(kernel='linear', class_weight = 'balanced', C=0.1, random_state = 42)
 #classifier = SVC(kernel='linear', decision_function_shape = 'ovo', shrinking = False, cache_size = 10000, verbose = True, max_iter = -1, random_state = 0)
-classifier = SVC(kernel='rbf', class_weight='balanced', decision_function_shape = 'ovo', shrinking = False, probability=True, cache_size = 10000, verbose = True, random_state = 0)
+classifier = SVC(kernel='rbf', class_weight='balanced', decision_function_shape = 'ovo', shrinking = False, probability=True, cache_size = 10000, verbose = False, random_state = 0)
 classifier.fit(X_train, y_train)
 
 ###################### Test Dataset ###########################
@@ -135,12 +135,6 @@ plt.legend()
 # show the plot
 plt.show()
 
-# ROC/AUC
-FP_rate, TP_rate, thresholds = roc_curve(y_test, y_pred)
-roc_auc = auc(FP_rate, TP_rate)
-print('roc_auc', roc_auc)
-
-
 ####################### PR Curve #####################
 from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import f1_score
@@ -160,7 +154,7 @@ plt.legend()
 # show the plot
 plt.show()
 
-###################### Evaluation Dataset ###########################
+###################### Evaluation ###########################
 # Evaluate predictions
 tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
 print('TN =', tn, 'FP =', fp, 'FN =', fn, 'TP =', tp)
