@@ -18,11 +18,11 @@ dataset = pd.read_csv('csv_result-Descriptors_Calibration.csv')
 X = dataset.iloc[:, 1:-1]
 y = dataset.iloc[:, -1]
 
-# Taking care of missing data
-from sklearn.impute import SimpleImputer
-imputer = SimpleImputer(missing_values=np.nan, strategy='mean')
-imputer.fit(X) 
-X = imputer.transform(X)
+# # Taking care of missing data
+# from sklearn.impute import SimpleImputer
+# imputer = SimpleImputer(missing_values=np.nan, strategy='mean')
+# imputer.fit(X) 
+# X = imputer.transform(X)
 
 # Convert 'P, N' into '1, 0'
 methylated = np.zeros(len(y))
@@ -45,7 +45,7 @@ y = y[filtered_entries]
 print('\nRemove outliers', X.shape, y.shape)
 
 # Select features
-selector = SelectKBest(k=10)
+selector = SelectKBest(k=5)
 X = selector.fit_transform(X,y)
 print('\nFeature selection', X.shape, y.shape)
 #print(selector.scores_)
@@ -135,7 +135,6 @@ plt.show()
 
 # ROC/AUC
 FP_rate, TP_rate, thresholds = roc_curve(y_test, y_pred)
-print(thresholds)
 roc_auc = auc(FP_rate, TP_rate)
 print('roc_auc', roc_auc)
 
