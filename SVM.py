@@ -11,9 +11,10 @@ from sklearn.feature_selection import SelectKBest, chi2
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier
 from collections import Counter
+from sklearn.metrics import roc_curve, auc
 
 # Import the dataset
-dataset = pd.read_csv('csv_result-Descriptors_Training.csv') 
+dataset = pd.read_csv('csv_result-Descriptors_Calibration.csv') 
 X = dataset.iloc[:, 1:-1]
 y = dataset.iloc[:, -1]
 
@@ -48,7 +49,7 @@ selector = SelectKBest(k=10)
 X = selector.fit_transform(X,y)
 print('\nFeature selection', X.shape, y.shape)
 print(selector.scores_)
-print(selector.pvalues_)
+#print(selector.pvalues_)
 
 ###################### Split Dataset ###########################
 # split into train and test sets
@@ -91,8 +92,8 @@ counter = Counter(y_train)
 print('After undersampling', counter)
 
 # Train the SVM model on the Training set
-classifier = SVC(kernel='linear', class_weight = 'balanced', C=0.1, random_state = 42)
-
+#classifier = SVC(kernel='linear', class_weight = 'balanced', C=0.1, random_state = 42)
+classifier = SVC(kernel='poly', class_weight = 'balanced', gamma = 0.3, C=100, random_state = 42)
 classifier.fit(X_train, y_train)
 
 ###################### Test Dataset ###########################
@@ -107,3 +108,8 @@ print('MAE: %.3f' % mae)
 tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
 print('TN =', tn, 'FP =', fp, 'FN =', fn, 'TP =', tp)
 print(classification_report(y_test,y_pred))
+
+# ROC/AUC
+FP_rate, TP_rate, thresholds = roc_curve(y_test, y_pred)
+roc_auc = auc(FP_rate, TP_rate)
+print('roc_auc', roc_auc)
