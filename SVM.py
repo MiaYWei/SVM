@@ -7,7 +7,10 @@ from sklearn.metrics import confusion_matrix, accuracy_score, classification_rep
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
 from imblearn.over_sampling import SMOTE 
-from sklearn.feature_selection import SelectKBest
+from sklearn.feature_selection import SelectKBest, chi2
+import matplotlib.pyplot as plt
+from sklearn.ensemble import RandomForestClassifier
+from collections import Counter
 
 # Import the dataset
 dataset = pd.read_csv('csv_result-Descriptors_Training.csv') 
@@ -29,6 +32,8 @@ for i in range(len(y)):
         methylated[i] = 0
 
 y = methylated
+print('Original dataset', X.shape, y.shape)
+print(Counter(y))
 
 # Identify outliers in the training dataset
 z_scores = stats.zscore(X)
@@ -36,16 +41,19 @@ abs_z_scores = np.abs(z_scores)
 filtered_entries = (abs_z_scores < 3).all(axis=1)
 X = X[filtered_entries]
 y = y[filtered_entries]
-print('Remove outliers', X.shape, y.shape)
+print('\nRemove outliers', X.shape, y.shape)
 
 # Select features
 selector = SelectKBest(k=10)
-X_new = selector.fit_transform(X,y)
-print('Feature selection', X_new.shape, y.shape)
+X = selector.fit_transform(X,y)
+print('\nFeature selection', X.shape, y.shape)
+print(selector.scores_)
+print(selector.pvalues_)
 
 ###################### Split Dataset ###########################
 # split into train and test sets
-X_train, X_test, y_train, y_test = train_test_split(X_new, y, test_size=0.20, random_state=42)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
+print('\nTraining set',X_train.shape, y_train.shape)
 
 ###################### Training Dataset ###########################
 # Standarize all features
@@ -53,17 +61,43 @@ sc_X = StandardScaler()
 X_train = sc_X.fit_transform(X_train)
 X_test = sc_X.transform(X_test)
 
-# Resample the imbalance dataset by using SMOTE
-model_smote = SMOTE(random_state = 42) 
-X_train, y_train = model_smote.fit_sample(X_train, y_train) 
-print(X_train.shape,y_train.shape)
+# Resample the imbalance dataset by using SMOTEENN
+# model_smote = SMOTE(random_state = 42) 
+# X_train, y_train = model_smote.fit_sample(X_train, y_train) 
+# print('Training set', X_train.shape, y_train.shape)
+# counter = Counter(y_train)
+# print('After oversampling',Counter(y_train))
+
+# Resample the imbalance dataset by undersampling
+from imblearn.under_sampling import TomekLinks
+from imblearn.under_sampling import CondensedNearestNeighbour
+from imblearn.under_sampling import NearMiss
+from imblearn.under_sampling import ClusterCentroids
+
+counter = Counter(y_train)
+print('Before undersampling', counter)
+
+# define the undersampling method
+#undersample = TomekLinks()
+#undersample = CondensedNearestNeighbour(n_neighbors=1)
+undersample = NearMiss(version=3, n_neighbors_ver3=3)
+#undersample = ClusterCentroids(random_state=0)
+
+# transform the dataset
+X_train, y_train = undersample.fit_resample(X_train, y_train)
+
+# summarize the new class distribution
+counter = Counter(y_train)
+print('After undersampling', counter)
 
 # Train the SVM model on the Training set
-classifier = SVC(kernel='rbf', random_state = 42)
+classifier = SVC(kernel='linear', class_weight = 'balanced', C=0.1, random_state = 42)
+
 classifier.fit(X_train, y_train)
 
 ###################### Test Dataset ###########################
 # Predicte the Test set results
+print(X_test.shape)
 y_pred = classifier.predict(X_test) 
 
 ###################### Evaluation Dataset ###########################
