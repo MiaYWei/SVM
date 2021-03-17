@@ -36,6 +36,7 @@ y = methylated
 print('Original dataset', X.shape, y.shape)
 print(Counter(y))
 
+###################### Split Dataset ###########################
 # Identify outliers in the training dataset
 z_scores = stats.zscore(X)
 abs_z_scores = np.abs(z_scores)
@@ -115,10 +116,10 @@ from sklearn.metrics import roc_curve
 from sklearn.metrics import roc_auc_score
 # calculate scores
 ns_auc = roc_auc_score(y_test, ns_probs)
-lr_auc = roc_auc_score(y_test, svm_probs)
+svm_auc = roc_auc_score(y_test, svm_probs)
 # summarize scores
 print('No Skill: ROC AUC=%.3f' % (ns_auc))
-print('SVM: ROC AUC=%.3f' % (lr_auc))
+print('SVM: ROC AUC=%.3f' % (svm_auc))
 # calculate roc curves
 ns_fpr, ns_tpr, _ = roc_curve(y_test, ns_probs)
 svm_fpr, scm_tpr, _ = roc_curve(y_test, svm_probs)
