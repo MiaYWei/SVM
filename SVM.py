@@ -100,10 +100,10 @@ print('After oversampling', Counter(y_train))
 classifier = SVC(kernel='linear', gamma = 'auto', decision_function_shape = 'ovo', class_weight='balanced', probability=True, cache_size = 10000, verbose = True, random_state = 42)
 classifier.fit(X_train, y_train)
 
-# from sklearn.feature_selection import RFE
-# selector = RFE(classifier, 5, step=1)
-# selector = selector.fit(X_train, y_train)
-# print(selector.ranking_)
+from sklearn.feature_selection import RFE
+selector = RFE(classifier, 5, step=1)
+selector = selector.fit(X_train, y_train)
+print(selector.ranking_)
 #Result(RFE(classifier, 5, step=1)) -- [22 15 20  9 12  1 18 17  1  5  2 23 24  3  6  7 21 19  1 13  8 10 14  1 16  1 11  4]
 
 ###################### Test Dataset ###########################
