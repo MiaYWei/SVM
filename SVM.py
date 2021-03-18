@@ -6,8 +6,7 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import confusion_matrix, accuracy_score, classification_report, mean_absolute_error
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
-from imblearn.over_sampling import SMOTE 
-from imblearn.over_sampling import SVMSMOTE 
+from imblearn.over_sampling import SMOTE, SVMSMOTE
 from sklearn.feature_selection import SelectKBest
 import matplotlib.pyplot as plt
 from collections import Counter
@@ -66,8 +65,8 @@ print('\nRemove outliers', X.shape, y.shape)
 # # print(selector.scores_)
 # # print(selector.pvalues_)
 
-features_selected = ['ECI_IB_4_N1','Gs(U)_IB_68_N1', 'Gs(U)_NO_ALR_SI71','ISA_NO_NPR_S','IP_NO_PLR_S']
-#features_selected = ['ECI_IB_4_N1','Gs(U)_IB_68_N1', 'Gs(U)_IB_60_N1', 'Z1_NO_sideR35_CV', 'Gs(U)_NO_ALR_SI71','ISA_NO_NPR_S','IP_NO_PLR_S', 'ECI_NO_PCR_CV']
+#features_selected = ['ECI_IB_4_N1','Gs(U)_IB_68_N1', 'Gs(U)_NO_ALR_SI71','ISA_NO_NPR_S','IP_NO_PLR_S']
+features_selected = ['ECI_IB_4_N1','Gs(U)_IB_68_N1', 'Gs(U)_IB_60_N1', 'Z1_NO_sideR35_CV', 'Gs(U)_NO_ALR_SI71','ISA_NO_NPR_S','IP_NO_PLR_S', 'ECI_NO_PCR_CV']
 
 ###################### Split Dataset ###########################
 # Split dataset into train and test sets
@@ -86,14 +85,8 @@ sc_X = StandardScaler()
 X_train = sc_X.fit_transform(X_train)
 X_test = sc_X.transform(X_test)
 
-# Data Normalization -- worse than Standardization
-# from sklearn.preprocessing import MinMaxScaler
-# norm = MinMaxScaler().fit(X_train)
-# X_train = norm.transform(X_train)
-# X_test = norm.transform(X_test)
-
 # Resample the imbalance dataset by using SMOTE
-model_smote = SMOTE(random_state = 42) 
+model_smote = SVMSMOTE(sampling_strategy='minority', random_state = 42) 
 X_train, y_train = model_smote.fit_sample(X_train, y_train) 
 print('Training set', X_train.shape, y_train.shape)
 print('After oversampling', Counter(y_train))
@@ -103,7 +96,7 @@ classifier = SVC(kernel='linear', gamma = 'auto', decision_function_shape = 'ovo
 classifier.fit(X_train, y_train)
 
 from sklearn.feature_selection import RFE
-selector = RFE(classifier, 5, step=1)
+selector = RFE(classifier, 8, step=1)
 selector = selector.fit(X_train, y_train)
 # print(selector.support_)
 # print(selector.ranking_)
@@ -134,7 +127,6 @@ ns_auc = roc_auc_score(y_test, ns_probs)
 svm_auc = roc_auc_score(y_test, svm_probs)
 
 # summarize scores
-print('No Skill: ROC AUC=%.3f' % (ns_auc))
 print('SVM: ROC AUC=%.3f' % (svm_auc))
 # calculate roc curves
 ns_fpr, ns_tpr, _ = roc_curve(y_test, ns_probs)
@@ -154,9 +146,6 @@ plt.show()
 from sklearn.metrics import precision_recall_curve
 from sklearn.metrics import f1_score
 svm_precision, svm_recall, _ = precision_recall_curve(y_test, svm_probs)
-svm_f1, svm_auc = f1_score(y_test, y_pred), auc(svm_recall, svm_precision)
-# summarize scores
-# print('SVM: f1=%.3f auc=%.3f' % (svm_f1, svm_auc))
 # plot the precision-recall curves
 no_skill = len(y_test[y_test==1]) / len(y_test)
 plt.plot([0, 1], [no_skill, no_skill], linestyle='--', label='No Skill')
@@ -169,10 +158,17 @@ plt.legend()
 # show the plot
 plt.show()
 
+# Max precision a sensitivity of 50% 
+precision_recall_50 = []
+for i in range(0, len(svm_recall)):
+    if svm_recall[i] >= 0.5:
+        precision_recall_50.append(svm_precision[i])
+        plt.scatter(svm_recall[i], svm_precision[i], linewidths = 0, marker = 'X', color='red')
+print('Max Pr@Re50', max(precision_recall_50))
+
 ###################### Evaluation ###########################
 #Goal: Maximum achievable precision at a recall of at least 50% (Pr@Re50)
 #      The correctness of your Pr@Re50 prediction over the test dataset
-
 print('\nTest data', Counter(y_test))
 
 # Evaluate predictions
