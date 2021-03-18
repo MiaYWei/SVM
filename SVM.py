@@ -66,7 +66,7 @@ print('Training set', X_train.shape, y_train.shape)
 print('After oversampling', Counter(y_train))
 
 # Train the SVM model on the Training set
-classifier = SVC(kernel='rbf', class_weight='balanced', decision_function_shape = 'ovo', shrinking = False, probability=True, verbose = False, random_state = 0)
+classifier = SVC(kernel='rbf', class_weight='balanced', decision_function_shape = 'ovo', shrinking = False, cache_size = 10000, probability=True, verbose = False, random_state = 0)
 classifier.fit(X_train, y_train)
 
 ###################### Test Dataset ###########################
