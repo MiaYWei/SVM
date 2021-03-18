@@ -13,7 +13,7 @@ from collections import Counter
 from sklearn.metrics import roc_curve, auc
 
 # Import the dataset
-dataset = pd.read_csv('csv_result-Descriptors_Training.csv') 
+dataset = pd.read_csv('csv_result-Descriptors_Calibration.csv') 
 X = dataset.iloc[:, 1:-1]
 y = dataset.iloc[:, -1]
 
@@ -54,10 +54,16 @@ print('\nTraining set',X_train.shape, y_train.shape)
 ns_probs = [0 for _ in range(len(y_test))]
 
 ###################### Training Dataset ###########################
-# Standardize all features
+# Data Standardization
 sc_X = StandardScaler()
 X_train = sc_X.fit_transform(X_train)
 X_test = sc_X.transform(X_test)
+
+# Data Normalization -- worse than Standardization
+# from sklearn.preprocessing import MinMaxScaler
+# norm = MinMaxScaler().fit(X_train)
+# X_train = norm.transform(X_train)
+# X_test = norm.transform(X_test)
 
 # Resample the imbalance dataset by using SMOTE
 model_smote = SMOTE(random_state = 42) 
@@ -66,7 +72,7 @@ print('Training set', X_train.shape, y_train.shape)
 print('After oversampling', Counter(y_train))
 
 # Train the SVM model on the Training set
-classifier = SVC(kernel='rbf', class_weight='balanced', decision_function_shape = 'ovo', shrinking = False, cache_size = 10000, probability=True, verbose = False, random_state = 0)
+classifier = SVC(kernel='linear', class_weight='balanced', decision_function_shape ='ovo', shrinking = False, cache_size = 10000, probability=True, verbose = True, random_state = 0)
 classifier.fit(X_train, y_train)
 
 ###################### Test Dataset ###########################
