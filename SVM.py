@@ -38,17 +38,17 @@ sns.countplot(data['class'],label="Count")
 plt.show()
 
 # Heatmap 
-features_N1= list(data.columns[2:12]) #from B to L
-corr = data[features_N1].corr()
-plt.figure(figsize=(14,14))
-sns.heatmap(corr, annot=True) # annot=True display numbers
-plt.show()
+# features_N1= list(data.columns[2:12]) #from B to L
+# corr = data[features_N1].corr()
+# plt.figure(figsize=(14,14))
+# sns.heatmap(corr, annot=True) # annot=True display numbers
+# plt.show()
 
-features_l= list(data.columns[12:28]) 
-corr_l = data[features_l].corr()
-plt.figure(figsize=(14,14))
-sns.heatmap(corr_l, annot=True)
-plt.show()
+# features_l= list(data.columns[12:28]) 
+# corr_l = data[features_l].corr()
+# plt.figure(figsize=(14,14))
+# sns.heatmap(corr_l, annot=True)
+# plt.show()
 
 ###################### Dataset Pre-processing ###########################
 # Identify and remove outliers
@@ -79,7 +79,6 @@ X_train = train[features_selected]
 y_train=train['class']
 X_test= test[features_selected]
 y_test =test['class']
-print('Test data', Counter(y_test))
 
 ###################### Training Dataset ###########################
 # Data Standardization
@@ -171,13 +170,29 @@ plt.legend()
 plt.show()
 
 ###################### Evaluation ###########################
+#Goal: Maximum achievable precision at a recall of at least 50% (Pr@Re50)
+#      The correctness of your Pr@Re50 prediction over the test dataset
+
+print('\nTest data', Counter(y_test))
+
 # Evaluate predictions
-tn, fn, fp, tp = confusion_matrix(y_test, y_pred).ravel()
-print('TN =', tn, 'FN =', fn, 'TP =', tp, 'FP =', fp)
+tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
+print('TN =', tn, 'FP =', fp, 'FN =', fn, 'TP =', tp)
 print(classification_report(y_test,y_pred))
 
-print('Positive Prediction Rate', tp/(tp+fp))
-print('Negative Prediction Rate ', tn/(tn+fn))
+# Acture Positive: TP + FN; Acture Negative: FP + TN
+print('\nActual Positive', tp+fn)
+print('Predict Positive', tp+fp)
+
+print('\nActual Negative', fp+tn)
+print('Predict Negative', fn+tn)
+
+print('ACC', (tp+tn)/(tp+tn+fn+fp))
+print('TPR (Sensitivity/Recall)', tp/(tp+fn))
+print('FPR (1-Specificity)', fp/(tn+fp))
+
+print('Precision', tp/(tp+fp))
+
 ###################### Bagging ###########################
 # from sklearn.ensemble import BaggingClassifier
 # ensemble = BaggingClassifier(base_estimator=classifier, n_estimators=31, random_state=42)
