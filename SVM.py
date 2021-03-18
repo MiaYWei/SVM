@@ -7,9 +7,8 @@ from sklearn.metrics import confusion_matrix, accuracy_score, classification_rep
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
 from imblearn.over_sampling import SMOTE 
-from sklearn.feature_selection import SelectKBest, chi2
+from sklearn.feature_selection import SelectKBest
 import matplotlib.pyplot as plt
-from sklearn.ensemble import RandomForestClassifier
 from collections import Counter
 from sklearn.metrics import roc_curve, auc
 
@@ -31,7 +30,7 @@ print('Original dataset', X.shape, y.shape)
 print(Counter(y))
 
 ###################### Dataset Pre-processing ###########################
-# Identify outliers in the training dataset
+# Identify and remove outliers
 z_scores = stats.zscore(X)
 abs_z_scores = np.abs(z_scores)
 filtered_entries = (abs_z_scores < 3).all(axis=1)
@@ -47,7 +46,7 @@ print('\nFeature selection', X.shape, y.shape)
 #print(selector.pvalues_)
 
 ###################### Split Dataset ###########################
-# split into train and test sets
+# Split dataset into train and test sets
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
 print('\nTraining set',X_train.shape, y_train.shape)
 
@@ -55,7 +54,7 @@ print('\nTraining set',X_train.shape, y_train.shape)
 ns_probs = [0 for _ in range(len(y_test))]
 
 ###################### Training Dataset ###########################
-# Standarize all features
+# Standardize all features
 sc_X = StandardScaler()
 X_train = sc_X.fit_transform(X_train)
 X_test = sc_X.transform(X_test)
@@ -64,19 +63,18 @@ X_test = sc_X.transform(X_test)
 model_smote = SMOTE(random_state = 42) 
 X_train, y_train = model_smote.fit_sample(X_train, y_train) 
 print('Training set', X_train.shape, y_train.shape)
-counter = Counter(y_train)
-print('After oversampling',Counter(y_train))
+print('After oversampling', Counter(y_train))
 
 # Train the SVM model on the Training set
 classifier = SVC(kernel='rbf', class_weight='balanced', decision_function_shape = 'ovo', shrinking = False, probability=True, verbose = False, random_state = 0)
 classifier.fit(X_train, y_train)
 
 ###################### Test Dataset ###########################
-# Predicte the Test set results
+# Predict the Test set results
 print('\nTest data', X_test.shape)
 y_pred = classifier.predict(X_test) 
 
-# predict probabilities
+# Predict probabilities
 svm_probs = classifier.predict_proba(X_test)
 # keep probabilities for the positive outcome only
 svm_probs = svm_probs[:, 1]
