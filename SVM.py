@@ -67,7 +67,7 @@ print('\nRemove outliers', X.shape, y.shape)
 
 #features_selected = ['ECI_IB_4_N1','Gs(U)_IB_68_N1', 'Gs(U)_NO_ALR_SI71','ISA_NO_NPR_S','IP_NO_PLR_S']
 features_selected = ['ECI_IB_4_N1','Gs(U)_IB_68_N1', 'Gs(U)_IB_60_N1', 'Z1_NO_sideR35_CV', 'Gs(U)_NO_ALR_SI71','ISA_NO_NPR_S','IP_NO_PLR_S', 'ECI_NO_PCR_CV']
-
+#features_selected = ['Z1_IB_10_N1','Gs(U)_IB_12_N1','Gs(U)_IB_68_N1', 'Gs(U)_IB_58_N1', 'Gs(U)_IB_60_N1', 'Z1_NO_sideR35_CV', 'Pb_NO_sideR35_S', 'Gs(U)_NO_ALR_SI71', 'IP_NO_PLR_S', 'Pb_NO_PCR_V']
 ###################### Split Dataset ###########################
 # Split dataset into train and test sets
 # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=42)
@@ -92,7 +92,7 @@ print('Training set', X_train.shape, y_train.shape)
 print('After oversampling', Counter(y_train))
 
 # Train the SVM model on the Training set
-classifier = SVC(kernel='linear', gamma = 'auto', decision_function_shape = 'ovo', class_weight='balanced', probability=True, shrinking = False, cache_size = 10000, verbose = False, random_state = 42)
+classifier = SVC(kernel='linear', gamma = 'auto', decision_function_shape = 'ovo', class_weight='balanced', probability=True, shrinking = False, cache_size = 10000, verbose = True, random_state = 42)
 classifier.fit(X_train, y_train)
 
 from sklearn.feature_selection import RFE
@@ -102,9 +102,10 @@ selector = selector.fit(X_train, y_train)
 # print(selector.ranking_)
 #Result(RFE(classifier, 5, step=1)) -- [22 15 20  9 12  1 18 17  1  5  2 23 24  3  6  7 21 19  1 13  8 10 14  1 16  1 11  4]
 ##features_selected = ['ECI_IB_4_N1','Gs(U)_IB_68_N1', 'Gs(U)_NO_ALR_SI71','ISA_NO_NPR_S','IP_NO_PLR_S']
-#Result(RFE(classifier, 5, step=1)) -- [19 12 17  6  9  1 15 14  1  2  1 20 21  1  3  4 18 16  1 10  5  7 11  1 13  1  8  1]
+#Result(RFE(classifier, 8, step=1)) -- [19 12 17  6  9  1 15 14  1  2  1 20 21  1  3  4 18 16  1 10  5  7 11  1 13  1  8  1]
 ##features_selected = ['ECI_IB_4_N1','Gs(U)_IB_68_N1', 'Gs(U)_IB_60_N1', 'Z1_NO_sideR35_CV', 'Gs(U)_NO_ALR_SI71','ISA_NO_NPR_S','IP_NO_PLR_S', 'ECI_NO_PCR_CV']
-
+#selector = RFE(classifier, 10, step=1)
+##[ 9 19  1 12  6  2 15  1  1  1  1 17 18  1  1 10 11  5  1  8  3  4 16 13 7  1  1 14]
 ###################### Test Dataset ###########################
 # Predict the Test set results
 print('\nTest data', X_test.shape)
