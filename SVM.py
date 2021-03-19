@@ -87,8 +87,8 @@ undersample = EditedNearestNeighbours(n_neighbors=3)
 X_train, y_train = undersample.fit_sample(X_train, y_train)
 print('After undersampling', Counter(y_train))
 
-# Train the SVM model on the Training set
-classifier = SVC(kernel='linear', gamma = 'auto', decision_function_shape = 'ovo', class_weight='balanced', probability=True, shrinking = False, cache_size = 10000, verbose = True, random_state = 42)
+# Train the SVM model on the training set
+classifier = SVC(kernel='linear', gamma = 'auto', class_weight='balanced', probability=True, shrinking = False, cache_size = 10000, verbose = True, random_state = 42)
 classifier.fit(X_train, y_train)
 
 from sklearn.feature_selection import RFE
@@ -100,8 +100,6 @@ selector = selector.fit(X_train, y_train)
 # Predict the Test set results
 print('\nTest data', X_test.shape)
 y_pred = classifier.predict(X_test) 
-
-
 
 ######################       ROC/AUC   ###########################
 from sklearn.metrics import roc_curve
@@ -127,12 +125,9 @@ svm_fpr, scm_tpr, _ = roc_curve(y_test, svm_probs)
 # plot the roc curve for the model
 plt.plot(ns_fpr, ns_tpr, linestyle='--', label='No Skill')
 plt.plot(svm_fpr, scm_tpr, marker='.', label='SVM')
-# axis labels
 plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
-# show the legend
 plt.legend()
-# show the plot
 plt.show()
 
 ####################### PR Curve #####################
@@ -143,12 +138,9 @@ svm_precision, svm_recall, _ = precision_recall_curve(y_test, svm_probs)
 no_skill = len(y_test[y_test==1]) / len(y_test)
 plt.plot([0, 1], [no_skill, no_skill], linestyle='--', label='No Skill')
 plt.plot(svm_recall, svm_precision, marker='.', label='SVM')
-# axis labels
 plt.xlabel('Recall')
 plt.ylabel('Precision')
-# show the legend
 plt.legend()
-# show the plot
 plt.show()
 
 # Max precision a sensitivity of 50% 
