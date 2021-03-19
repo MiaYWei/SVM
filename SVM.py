@@ -32,8 +32,8 @@ print(Counter(y))
 
 ###################### Dataset Visualization ###########################
 # visualize Methylated class
-sns.countplot(data['class'],label="Count")
-plt.show()
+# sns.countplot(data['class'],label="Count")
+# plt.show()
 
 # Heatmap 
 # features_N1= list(data.columns[2:12]) #from B to L
@@ -62,7 +62,7 @@ features_selected = ['ECI_IB_4_N1','Gs(U)_IB_68_N1', 'Gs(U)_IB_60_N1', 'Z1_NO_si
 
 ###################### Split Dataset ###########################
 # Split dataset into train and test sets
-train, test = train_test_split(data, test_size = 0.2, random_state = 100)# in this our main data is splitted into train and test
+train, test = train_test_split(data, test_size=0.2, random_state=100)# in this our main data is splitted into train and test
 X_train = train[features_selected]
 y_train=train['class']
 X_test= test[features_selected]
@@ -75,7 +75,7 @@ X_train = sc_X.fit_transform(X_train)
 X_test = sc_X.transform(X_test)
 
 # Resample the imbalance dataset by using SMOTE
-model_smote = SVMSMOTE(sampling_strategy='auto', n_jobs = -1, random_state = 42) 
+model_smote = SVMSMOTE(sampling_strategy='auto', n_jobs =-1, random_state=42) 
 X_train, y_train = model_smote.fit_sample(X_train, y_train) 
 print('Training set', X_train.shape, y_train.shape)
 print('After oversampling', Counter(y_train))
@@ -86,12 +86,13 @@ undersample = EditedNearestNeighbours(n_neighbors=3)
 X_train, y_train = undersample.fit_sample(X_train, y_train)
 print('After undersampling', Counter(y_train))
 
-# Train the SVM model on the training set
-classifier = SVC(kernel='linear', gamma = 'auto', C = 50, class_weight='balanced', probability=True, shrinking = False, cache_size = 10000, verbose = True, random_state = 42)
+# Train the SVM model on the training set; # C = 50, 70, and 100 has the same result.Max Pr@Re50 0.11159
+classifier = SVC(kernel='linear', gamma='auto', C=100, class_weight='balanced', probability=True, shrinking=False, cache_size=10000, verbose=True, random_state=42)
+
 classifier.fit(X_train, y_train)
 
 from sklearn.feature_selection import RFE
-selector = RFE(classifier, 8, step = 1)
+selector = RFE(classifier, 8, step=1)
 selector = selector.fit(X_train, y_train)
 #print(selector.ranking_)
 
