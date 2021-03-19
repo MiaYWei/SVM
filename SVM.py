@@ -3,11 +3,10 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.metrics import confusion_matrix, accuracy_score, classification_report, mean_absolute_error
+from sklearn.metrics import confusion_matrix, accuracy_score, classification_report
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
 from imblearn.over_sampling import SVMSMOTE
-from sklearn.feature_selection import SelectKBest
 import matplotlib.pyplot as plt
 from collections import Counter
 from sklearn.metrics import roc_curve, auc
@@ -88,7 +87,7 @@ X_train, y_train = undersample.fit_sample(X_train, y_train)
 print('After undersampling', Counter(y_train))
 
 # Train the SVM model on the training set
-classifier = SVC(kernel='linear', gamma = 'auto', class_weight='balanced', probability=True, shrinking = False, cache_size = 10000, verbose = True, random_state = 42)
+classifier = SVC(kernel='linear', gamma = 'auto', C = 50, class_weight='balanced', probability=True, shrinking = False, cache_size = 10000, verbose = True, random_state = 42)
 classifier.fit(X_train, y_train)
 
 from sklearn.feature_selection import RFE
