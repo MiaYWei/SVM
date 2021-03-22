@@ -87,7 +87,7 @@ X_train, y_train = undersample.fit_sample(X_train, y_train)
 print('After undersampling', Counter(y_train))
 
 # Train the SVM model on the training set; # C = 50, 70, and 100 has the same result.Max Pr@Re50 0.11159
-classifier = SVC(kernel='linear', gamma='auto', C=100, class_weight='balanced', probability=True, shrinking=False, cache_size=10000, verbose=True, random_state=42)
+classifier = SVC(kernel='linear', gamma=0.665, C=11.73, class_weight='balanced', probability=True, shrinking=False, cache_size=10000, verbose=True, random_state=42)
 
 classifier.fit(X_train, y_train)
 
