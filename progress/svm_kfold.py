@@ -55,7 +55,7 @@ print('After undersampling', Counter(y))
 
 ###################### Dataset Visualization ###########################
 # visualize Methylated class
-sns.countplot(data['class'],label="Count")
+sns.countplot(y,label="Count")
 plt.show()
 
 ########################## ROC & cross fold ############
@@ -137,4 +137,3 @@ plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.legend()
 plt.show()
-
