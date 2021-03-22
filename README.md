@@ -15,8 +15,8 @@ Distinguishing between the protein windows that are (‘P’ in last column) or 
 ## Repo Structure
 
         ├── data
-        │   ├── csv_result-Descriptors_Calibration
-		│   └── csv_result-Descriptors_Training
+        │   ├── csv_result-Descriptors_Calibration.csv
+		│   └── csv_result-Descriptors_Training.csv
         ├── README.md
         ├── svm.py
         ├── svm_parameter.py
