@@ -13,7 +13,7 @@ from imblearn.under_sampling import EditedNearestNeighbours
 from collections import Counter
 
 # Import the dataset
-data = pd.read_csv('csv_result-Descriptors_Calibration.csv') 
+data = pd.read_csv('data\csv_result-Descriptors_Calibration.csv') 
 
 # Convert 'P, N' into '1, 0'
 data['class'] = data['class'].map({'P':1,'N':0})
@@ -74,7 +74,7 @@ for i, (train, test) in enumerate(cv.split(X, y)):
     if i==5:
         #classifier.fit(X[train], y[train])
         ensemble.fit(X[train], y[train])
-        viz = plot_roc_curve(classifier, X[test], y[test], name='ROC fold {}'.format(i), alpha=0.3, lw=1, ax=ax)
+        viz = plot_roc_curve(ensemble, X[test], y[test], name='ROC fold {}'.format(i), alpha=0.3, lw=1, ax=ax)
         interp_tpr = np.interp(mean_fpr, viz.fpr, viz.tpr)
         interp_tpr[0] = 0.0
         tprs.append(interp_tpr)
@@ -84,9 +84,9 @@ for i, (train, test) in enumerate(cv.split(X, y)):
 
 ###################### Test Dataset ###########################
 # Predict the Test set results
-y_pred = classifier.predict(X_test) 
+y_pred = ensemble.predict(X_test) 
 # Predict probabilities
-svm_probs = classifier.predict_proba(X_test)
+svm_probs = ensemble.predict_proba(X_test)
 # keep probabilities for the positive outcome only
 svm_probs = svm_probs[:, 1]
 
