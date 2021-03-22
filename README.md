@@ -8,6 +8,6 @@ Distinguishing between the protein windows that are (‘P’ in last column) or 
 
 ## Evaluation
 
-### 1. Maximum achievable precision at a recall of at least 50% (Pr@Re50)
+1. Maximum achievable precision at a recall of at least 50% (Pr@Re50)
 
-### 2. The correctness of Pr@Re50 prediction over the test dataset
+2. The correctness of Pr@Re50 prediction over the test dataset
