@@ -89,7 +89,10 @@ print('After undersampling', Counter(y_train))
 # Train the SVM model on the training set; # C = 50, 70, and 100 has the same result.Max Pr@Re50 0.11159
 classifier = SVC(kernel='linear', gamma=0.665, C=11.73, class_weight='balanced', probability=True, shrinking=False, cache_size=10000, verbose=True, random_state=42)
 
-classifier.fit(X_train, y_train)
+###################### Bagging ###########################
+from sklearn.ensemble import BaggingClassifier
+ensemble = BaggingClassifier(base_estimator=classifier, n_estimators=31, random_state=42)
+ensemble.fit(X_train, y_train)
 
 from sklearn.feature_selection import RFE
 selector = RFE(classifier, 8, step=1)
@@ -99,7 +102,7 @@ selector = selector.fit(X_train, y_train)
 ###################### Test Dataset ###########################
 # Predict the Test set results
 print('\nTest data', X_test.shape)
-y_pred = classifier.predict(X_test) 
+y_pred = ensemble.predict(X_test) 
 
 ######################       ROC/AUC   ###########################
 from sklearn.metrics import roc_curve
@@ -109,7 +112,7 @@ from sklearn.metrics import roc_auc_score
 ns_probs = [0 for _ in range(len(y_test))]
 
 # Predict probabilities
-svm_probs = classifier.predict_proba(X_test)
+svm_probs = ensemble.predict_proba(X_test)
 # keep probabilities for the positive outcome only
 svm_probs = svm_probs[:, 1]
 
@@ -160,3 +163,4 @@ print('\nTest data', Counter(y_test))
 tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
 print('TN =', tn, 'FP =', fp, 'FN =', fn, 'TP =', tp)
 print(classification_report(y_test,y_pred))
+
