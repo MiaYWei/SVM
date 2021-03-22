@@ -11,3 +11,14 @@ Distinguishing between the protein windows that are (‘P’ in last column) or 
 1. Maximum achievable precision at a recall of at least 50% (Pr@Re50)
 
 2. The correctness of Pr@Re50 prediction over the test dataset
+
+## Repo Structure
+
+        ├── data
+        │   ├── csv_result-Descriptors_Calibration
+		│   └── csv_result-Descriptors_Training
+        ├── README.md
+        ├── svm.py
+        ├── svm_parameter.py
+        ├── svm_kfold.py
+        └── svm_roc.py
