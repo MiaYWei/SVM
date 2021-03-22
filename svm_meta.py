@@ -91,7 +91,7 @@ classifier = SVC(kernel='linear', gamma=0.665, C=11.73, class_weight='balanced',
 
 ###################### Bagging ###########################
 from sklearn.ensemble import BaggingClassifier
-ensemble = BaggingClassifier(base_estimator=classifier, n_estimators=31, random_state=42)
+ensemble = BaggingClassifier(base_estimator=classifier, n_estimators=10, random_state=42)
 ensemble.fit(X_train, y_train)
 
 from sklearn.feature_selection import RFE

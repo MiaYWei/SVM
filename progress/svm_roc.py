@@ -37,7 +37,7 @@ print('\nRemove outliers', X.shape, y.shape)
 features_selected = ['ECI_IB_4_N1','Gs(U)_IB_68_N1', 'Gs(U)_IB_60_N1', 'Z1_NO_sideR35_CV', 'Gs(U)_NO_ALR_SI71','ISA_NO_NPR_S','IP_NO_PLR_S', 'ECI_NO_PCR_CV']
 X = X[features_selected]
 
-###################### Training Dataset ###########################
+###################### Whole Dataset ###########################
 # Data Standardization
 sc_X = StandardScaler()
 X = sc_X.fit_transform(X)
