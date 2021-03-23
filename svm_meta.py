@@ -95,12 +95,6 @@ ensemble = BalancedBaggingClassifier(base_estimator=classifier, n_estimators=10,
                                  random_state=42)
 ensemble.fit(X_train, y_train)
 
-
-from sklearn.feature_selection import RFE
-selector = RFE(classifier, 8, step=1)
-selector = selector.fit(X_train, y_train)
-#print(selector.ranking_)
-
 ###################### Test Dataset ###########################
 # Predict the Test set results
 print('\nTest data', X_test.shape)
@@ -168,7 +162,7 @@ print(classification_report(y_test,y_pred))
 
 ###################### Save Model ###########################
 import pickle
-f = open('saved_model/classifier_meta.pickle','wb')
+f = open('saved_model/classifier_meta_anova.pickle','wb')
 pickle.dump(classifier,f)
 f.close()
 

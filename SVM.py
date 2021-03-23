@@ -64,13 +64,7 @@ print('After undersampling', Counter(y_train))
 
 # Train the SVM model on the training set; 
 classifier = SVC(kernel='linear', gamma=0.665, C=11.73, class_weight='balanced', probability=True, shrinking=False, cache_size=10000, verbose=True, random_state=42)
-
 classifier.fit(X_train, y_train)
-
-from sklearn.feature_selection import RFE
-selector = RFE(classifier, 8, step=1)
-selector = selector.fit(X_train, y_train)
-#print(selector.ranking_)
 
 ###################### Test Dataset ###########################
 # Predict the Test set results
@@ -139,6 +133,6 @@ print(classification_report(y_test,y_pred))
 
 ###################### Save Model ###########################
 import pickle
-f = open('saved_model/classifier.pickle','wb')
+f = open('saved_model/classifier_anova.pickle','wb')
 pickle.dump(classifier,f)
 f.close()
