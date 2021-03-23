@@ -90,9 +90,16 @@ print('After undersampling', Counter(y_train))
 classifier = SVC(kernel='linear', gamma=0.665, C=11.73, class_weight='balanced', probability=True, shrinking=False, cache_size=10000, verbose=True, random_state=42)
 
 ###################### Bagging ###########################
-from sklearn.ensemble import BaggingClassifier
-ensemble = BaggingClassifier(base_estimator=classifier, n_estimators=10, random_state=42)
+# from sklearn.ensemble import BaggingClassifier
+# ensemble = BaggingClassifier(base_estimator=classifier, n_estimators=10, random_state=42)
+
+from imblearn.ensemble import BalancedBaggingClassifier
+ensemble = BalancedBaggingClassifier(base_estimator=classifier(), n_estimators=10,
+                                 sampling_strategy='auto',
+                                 replacement=False,
+                                 random_state=0)
 ensemble.fit(X_train, y_train)
+
 
 from sklearn.feature_selection import RFE
 selector = RFE(classifier, 8, step=1)
@@ -163,4 +170,10 @@ print('\nTest data', Counter(y_test))
 tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
 print('TN =', tn, 'FP =', fp, 'FN =', fn, 'TP =', tp)
 print(classification_report(y_test,y_pred))
+
+###################### Save Model ###########################
+import pickle
+f = open('saved_model/classifier_meta.pickle','wb')
+pickle.dump(classifier,f)
+f.close()
 

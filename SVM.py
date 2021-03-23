@@ -24,29 +24,10 @@ y = data.iloc[:, -1]
 print('Original dataset', X.shape, y.shape)
 print(Counter(y))
 
-# Display dataset
-# pd.set_option('display.max_columns', None)
-# print(data.columns)
-# print(data.head(3))
-# print(data.describe())
-
 ###################### Dataset Visualization ###########################
 # visualize Methylated class
-# sns.countplot(data['class'],label="Count")
-# plt.show()
-
-# Heatmap 
-# features_N1= list(data.columns[2:12]) #from B to L
-# corr = data[features_N1].corr()
-# plt.figure(figsize=(14,14))
-# sns.heatmap(corr, annot=True) # annot=True display numbers
-# plt.show()
-
-# features_l= list(data.columns[12:28]) 
-# corr_l = data[features_l].corr()
-# plt.figure(figsize=(14,14))
-# sns.heatmap(corr_l, annot=True)
-# plt.show()
+sns.countplot(data['class'],label="Count")
+plt.show()
 
 ###################### Dataset Pre-processing ###########################
 # Identify and remove outliers
@@ -160,3 +141,9 @@ print('\nTest data', Counter(y_test))
 tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
 print('TN =', tn, 'FP =', fp, 'FN =', fn, 'TP =', tp)
 print(classification_report(y_test,y_pred))
+
+###################### Save Model ###########################
+import pickle
+f = open('saved_model/classifier.pickle','wb')
+pickle.dump(classifier,f)
+f.close()
