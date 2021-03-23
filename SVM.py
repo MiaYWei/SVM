@@ -3,14 +3,14 @@ import numpy as np
 import pandas as pd
 from scipy import stats
 from sklearn.model_selection import train_test_split, cross_val_score
-from sklearn.metrics import confusion_matrix, accuracy_score, classification_report
+from sklearn.metrics import confusion_matrix, accuracy_score, classification_report, roc_curve, auc
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
 from imblearn.over_sampling import SVMSMOTE
 import matplotlib.pyplot as plt
 from collections import Counter
-from sklearn.metrics import roc_curve, auc
 import seaborn as sns
+from sklearn.feature_selection import f_classif,SelectPercentile
 
 # Import the dataset
 data = pd.read_csv('data\csv_result-Descriptors_Calibration.csv') 
@@ -39,15 +39,10 @@ y = y[filtered_entries]
 print('\nRemove outliers', X.shape, y.shape)
 
 # Select features
-features_selected = ['ECI_IB_4_N1','Gs(U)_IB_68_N1', 'Gs(U)_IB_60_N1', 'Z1_NO_sideR35_CV', 'Gs(U)_NO_ALR_SI71','ISA_NO_NPR_S','IP_NO_PLR_S', 'ECI_NO_PCR_CV']
+X_new = SelectPercentile(f_classif, percentile=30).fit_transform(X, y)
 
 ###################### Split Dataset ###########################
-# Split dataset into train and test sets
-train, test = train_test_split(data, test_size=0.2, random_state=100)# in this our main data is splitted into train and test
-X_train = train[features_selected]
-y_train=train['class']
-X_test= test[features_selected]
-y_test =test['class']
+X_train, X_test, y_train, y_test = train_test_split(X_new, y, test_size=0.20, random_state=101)
 
 ###################### Training Dataset ###########################
 # Data Standardization
