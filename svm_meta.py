@@ -97,7 +97,7 @@ from imblearn.ensemble import BalancedBaggingClassifier
 ensemble = BalancedBaggingClassifier(base_estimator=classifier, n_estimators=10,
                                  sampling_strategy='auto',
                                  replacement=False,
-                                 random_state=0)
+                                 random_state=42)
 ensemble.fit(X_train, y_train)
 
 
