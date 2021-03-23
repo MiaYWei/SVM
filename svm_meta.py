@@ -94,7 +94,7 @@ classifier = SVC(kernel='linear', gamma=0.665, C=11.73, class_weight='balanced',
 # ensemble = BaggingClassifier(base_estimator=classifier, n_estimators=10, random_state=42)
 
 from imblearn.ensemble import BalancedBaggingClassifier
-ensemble = BalancedBaggingClassifier(base_estimator=classifier(), n_estimators=10,
+ensemble = BalancedBaggingClassifier(base_estimator=classifier, n_estimators=10,
                                  sampling_strategy='auto',
                                  replacement=False,
                                  random_state=0)
