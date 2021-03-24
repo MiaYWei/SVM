@@ -133,6 +133,11 @@ print(classification_report(y_test,y_pred))
 
 ###################### Save Model ###########################
 import pickle
-f = open('saved_model/classifier_anova.pickle','wb')
+f = open('classifier_anova_30.pickle','wb')
 pickle.dump(classifier,f)
 f.close()
+
+# save the model to disk
+import joblib
+filename = 'finalized_model_30.sav'
+joblib.dump(classifier, filename)
