@@ -25,13 +25,14 @@ print('Original dataset', X.shape, y.shape)
 print(Counter(y))
 
 ###################### Dataset Pre-processing ###########################
-# Identify and remove outliers
-z_scores = stats.zscore(X)
-abs_z_scores = np.abs(z_scores)
-filtered_entries = (abs_z_scores < 3).all(axis=1)
+#Identify and remove outliers
+Q1 = X.quantile(0.25)
+Q3 = X.quantile(0.75)
+IQR = Q3 - Q1
+filtered_entries = ((X < (Q1 - 1.5 * IQR)) |(X > (Q3 + 1.5 * IQR))).any(axis=1) 
 X = X[filtered_entries]
 y = y[filtered_entries]
-print('\nRemove outliers', X.shape, y.shape)
+print('IQR', X.shape, y.shape)
 
 # Select features
 X_new = SelectPercentile(f_classif, percentile=30).fit_transform(X, y)
@@ -40,6 +41,13 @@ X_new = SelectPercentile(f_classif, percentile=30).fit_transform(X, y)
 X_train, X_test, y_train, y_test = train_test_split(X_new, y, test_size=0.20, random_state=101)
 
 ###################### Training Dataset ###########################
+# identify outliers in the training dataset
+Q1, Q3 = np.percentile(X_train, [25, 75])
+IQR = Q3 - Q1
+filtered_entries = ((X_train < (Q1 - 1.5 * IQR)) |(X_train > (Q3 + 1.5 * IQR))).any(axis=1) 
+X_train = X_train[filtered_entries]
+y_train = y_train[filtered_entries]
+
 # Data Standardization
 sc_X = StandardScaler()
 X_train = sc_X.fit_transform(X_train)
@@ -62,17 +70,6 @@ classifier = SVC(kernel='linear', gamma=0.665, C=11.73, class_weight='balanced',
 classifier.fit(X_train, y_train)
 
 ###################### Bagging ###########################
-# from sklearn.ensemble import BaggingClassifier
-# ensemble = BaggingClassifier(base_estimator=classifier, n_estimators=10, random_state=42)
-
-# from sklearn.ensemble import AdaBoostClassifier
-# ensemble = AdaBoostClassifier(base_estimator=classifier, n_estimators=10, random_state=42)
-# ensemble.fit(X_train, y_train)
-
-# from imblearn.ensemble import BalancedRandomForestClassifier
-# ensemble = BalancedRandomForestClassifier(n_estimators=100, random_state=0)
-# ensemble.fit(X_train, y_train)
-
 from imblearn.ensemble import BalancedBaggingClassifier
 ensemble = BalancedBaggingClassifier(base_estimator=classifier, n_estimators=10,
                                  sampling_strategy='auto',
@@ -147,6 +144,6 @@ print(classification_report(y_test,y_pred))
 
 ###################### Save Model ###########################
 import pickle
-f = open('classifier_anova_30.pickle','wb')
+f = open('classifier_anova_30_meta.pickle','wb')
 pickle.dump(classifier,f)
 f.close()
