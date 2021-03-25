@@ -30,13 +30,14 @@ sns.countplot(data['class'],label="Count")
 plt.show()
 
 ###################### Dataset Pre-processing ###########################
-# Identify and remove outliers
-z_scores = stats.zscore(X)
-abs_z_scores = np.abs(z_scores)
-filtered_entries = (abs_z_scores < 3).all(axis=1)
+#Identify and remove outliers
+Q1 = X.quantile(0.25)
+Q3 = X.quantile(0.75)
+IQR = Q3 - Q1
+filtered_entries = ((X < (Q1 - 1.5 * IQR)) |(X > (Q3 + 1.5 * IQR))).any(axis=1) 
 X = X[filtered_entries]
 y = y[filtered_entries]
-print('\nRemove outliers', X.shape, y.shape)
+print('IQR', X.shape, y.shape)
 
 # Select features
 X_new = SelectPercentile(f_classif, percentile=30).fit_transform(X, y)
@@ -45,6 +46,13 @@ X_new = SelectPercentile(f_classif, percentile=30).fit_transform(X, y)
 X_train, X_test, y_train, y_test = train_test_split(X_new, y, test_size=0.20, random_state=101)
 
 ###################### Training Dataset ###########################
+# identify outliers in the training dataset
+Q1, Q3 = np.percentile(X_train, [25, 75])
+IQR = Q3 - Q1
+filtered_entries = ((X_train < (Q1 - 1.5 * IQR)) |(X_train > (Q3 + 1.5 * IQR))).any(axis=1) 
+X_train = X_train[filtered_entries]
+y_train = y_train[filtered_entries]
+
 # Data Standardization
 sc_X = StandardScaler()
 X_train = sc_X.fit_transform(X_train)
@@ -119,8 +127,8 @@ for i in range(0, len(svm_recall)):
     if svm_recall[i] >= 0.5:
         precision_recall_50.append(svm_precision[i])
         plt.scatter(svm_recall[i], svm_precision[i], linewidths = 0, marker = 'X', color='red')
-print('Max Pr@Re50', max(precision_recall_50))
-
+print('Max Pr@Re50', max(precision_recall_50), np.mean(precision_recall_50), np.std(precision_recall_50))
+plt.show()
 ###################### Evaluation ###########################
 #Goal: Maximum achievable precision at a recall of at least 50% (Pr@Re50)
 #      The correctness of your Pr@Re50 prediction over the test dataset
@@ -136,8 +144,3 @@ import pickle
 f = open('classifier_anova_30.pickle','wb')
 pickle.dump(classifier,f)
 f.close()
-
-# save the model to disk
-import joblib
-filename = 'finalized_model_30.sav'
-joblib.dump(classifier, filename)
