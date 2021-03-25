@@ -24,30 +24,6 @@ y = data.iloc[:, -1]
 print('Original dataset', X.shape, y.shape)
 print(Counter(y))
 
-# Display dataset
-# pd.set_option('display.max_columns', None)
-# print(data.columns)
-# print(data.head(3))
-# print(data.describe())
-
-###################### Dataset Visualization ###########################
-# visualize Methylated class
-# sns.countplot(data['class'],label="Count")
-# plt.show()
-
-# Heatmap 
-# features_N1= list(data.columns[2:12]) #from B to L
-# corr = data[features_N1].corr()
-# plt.figure(figsize=(14,14))
-# sns.heatmap(corr, annot=True) # annot=True display numbers
-# plt.show()
-
-# features_l= list(data.columns[12:28]) 
-# corr_l = data[features_l].corr()
-# plt.figure(figsize=(14,14))
-# sns.heatmap(corr_l, annot=True)
-# plt.show()
-
 ###################### Dataset Pre-processing ###########################
 # Identify and remove outliers
 z_scores = stats.zscore(X)
@@ -83,15 +59,24 @@ print('After undersampling', Counter(y_train))
 
 # Train the SVM model on the training set; # C = 50, 70, and 100 has the same result.Max Pr@Re50 0.11159
 classifier = SVC(kernel='linear', gamma=0.665, C=11.73, class_weight='balanced', probability=True, shrinking=False, cache_size=10000, verbose=True, random_state=42)
+classifier.fit(X_train, y_train)
 
 ###################### Bagging ###########################
 # from sklearn.ensemble import BaggingClassifier
 # ensemble = BaggingClassifier(base_estimator=classifier, n_estimators=10, random_state=42)
 
+# from sklearn.ensemble import AdaBoostClassifier
+# ensemble = AdaBoostClassifier(base_estimator=classifier, n_estimators=10, random_state=42)
+# ensemble.fit(X_train, y_train)
+
+# from imblearn.ensemble import BalancedRandomForestClassifier
+# ensemble = BalancedRandomForestClassifier(n_estimators=100, random_state=0)
+# ensemble.fit(X_train, y_train)
+
 from imblearn.ensemble import BalancedBaggingClassifier
 ensemble = BalancedBaggingClassifier(base_estimator=classifier, n_estimators=10,
                                  sampling_strategy='auto',
-                                 replacement=False,
+                                 replacement=True,
                                  random_state=42)
 ensemble.fit(X_train, y_train)
 
@@ -162,7 +147,6 @@ print(classification_report(y_test,y_pred))
 
 ###################### Save Model ###########################
 import pickle
-f = open('saved_model/classifier_meta_anova.pickle','wb')
+f = open('classifier_anova_30.pickle','wb')
 pickle.dump(classifier,f)
 f.close()
-

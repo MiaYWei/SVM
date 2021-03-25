@@ -1,6 +1,6 @@
 # Import the libraries
 import pandas as pd
-from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.model_selection import cross_val_score
 from sklearn.metrics import confusion_matrix, accuracy_score, classification_report, roc_curve, auc
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
@@ -29,8 +29,14 @@ sc_X = StandardScaler()
 X_test = sc_X.fit_transform(X)
 
 # load the model from disk
-filename = 'finalized_model_30.sav'
-loaded_model = joblib.load(filename)
+# filename = 'calssifier_BBC_30.sav'
+# loaded_model = joblib.load(filename)
+# result = loaded_model.score(X_test, y)
+
+# load the model from disk
+import pickle
+filename = 'classifier_anova_30.pickle'
+loaded_model = pickle.load(open(filename, 'rb'))
 result = loaded_model.score(X_test, y)
 print(result)
 
