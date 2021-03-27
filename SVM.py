@@ -18,12 +18,10 @@ data = pd.read_csv('data\csv_result-Descriptors_Calibration.csv')
 
 # Convert 'P, N' into '1, 0'
 data['class'] = data['class'].map({'P':1,'N':0})
-
 X = data.iloc[:, 1:-1]
 y = data.iloc[:, -1]
 
-print('Original dataset', X.shape, y.shape)
-print(Counter(y))
+print('Original dataset', X.shape, y.shape, Counter(y))
 
 ###################### Dataset Visualization ###########################
 # visualize Methylated class
@@ -84,7 +82,7 @@ plt.title('Calibration.csv - Training Dataset - After SVMSMOTE & ENN')
 plt.show()
 
 # Train the SVM model on the training set; 
-classifier = SVC(kernel='linear', gamma=0.665, C=11.73, class_weight='balanced', probability=True, shrinking=False, cache_size=10000, verbose=True, random_state=42)
+classifier = SVC(kernel='linear', gamma=2.825, C=19, class_weight='balanced', probability=True, shrinking=False, cache_size=10000, verbose=True, random_state=42)
 classifier.fit(X_train, y_train)
 
 ###################### Test Dataset ###########################

@@ -6,44 +6,38 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import confusion_matrix, accuracy_score, classification_report, mean_absolute_error
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
+from sklearn.feature_selection import f_classif,SelectPercentile
 from imblearn.over_sampling import SVMSMOTE
-from sklearn.feature_selection import SelectKBest
+from imblearn.under_sampling import EditedNearestNeighbours
 import matplotlib.pyplot as plt
 from collections import Counter
 from sklearn.metrics import roc_curve, auc
-import seaborn as sns
 
 # Import the dataset
 data = pd.read_csv('csv_result-Descriptors_Calibration.csv') 
 
 # Convert 'P, N' into '1, 0'
 data['class'] = data['class'].map({'P':1,'N':0})
-
 X = data.iloc[:, 1:-1]
 y = data.iloc[:, -1]
 
-print('Original dataset', X.shape, y.shape)
-print(Counter(y))
+print('Original dataset', X.shape, y.shape, Counter(y))
 
 ###################### Dataset Pre-processing ###########################
-# Identify and remove outliers
-z_scores = stats.zscore(X)
-abs_z_scores = np.abs(z_scores)
-filtered_entries = (abs_z_scores < 3).all(axis=1)
+#Identify and remove outliers
+Q1 = X.quantile(0.25)
+Q3 = X.quantile(0.75)
+IQR = Q3 - Q1
+filtered_entries = ((X < (Q1 - 1.5 * IQR)) |(X > (Q3 + 1.5 * IQR))).any(axis=1) 
 X = X[filtered_entries]
 y = y[filtered_entries]
-print('\nRemove outliers', X.shape, y.shape)
+print('IQR', X.shape, y.shape)
 
 # Select features
-features_selected = ['ECI_IB_4_N1','Gs(U)_IB_68_N1', 'Gs(U)_IB_60_N1', 'Z1_NO_sideR35_CV', 'Gs(U)_NO_ALR_SI71','ISA_NO_NPR_S','IP_NO_PLR_S', 'ECI_NO_PCR_CV']
+X_new = SelectPercentile(f_classif, percentile=30).fit_transform(X, y)
 
 ###################### Split Dataset ###########################
-# Split dataset into train and test sets
-train, test = train_test_split(data, test_size = 0.2, random_state = 100)# in this our main data is splitted into train and test
-X_train = train[features_selected]
-y_train=train['class']
-X_test= test[features_selected]
-y_test =test['class']
+X_train, X_test, y_train, y_test = train_test_split(X_new, y, test_size=0.20, random_state=101)
 
 ###################### Training Dataset ###########################
 # Data Standardization
@@ -58,8 +52,7 @@ print('Training set', X_train.shape, y_train.shape)
 print('After oversampling', Counter(y_train))
 
 # The procedure only removes noisy and ambiguous points along the class boundary
-from imblearn.under_sampling import EditedNearestNeighbours
-undersample = EditedNearestNeighbours(n_neighbors=3)
+undersample = EditedNearestNeighbours(n_neighbors=5)
 X_train, y_train = undersample.fit_sample(X_train, y_train)
 print('After undersampling', Counter(y_train))
 
