@@ -6,14 +6,15 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import confusion_matrix, accuracy_score, classification_report, roc_curve, auc
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
+from sklearn.feature_selection import f_classif,SelectPercentile
 from imblearn.over_sampling import SVMSMOTE
+from imblearn.under_sampling import EditedNearestNeighbours
 import matplotlib.pyplot as plt
 from collections import Counter
 import seaborn as sns
-from sklearn.feature_selection import f_classif,SelectPercentile
 
 # Import the dataset
-data = pd.read_csv('data\csv_result-Descriptors_Calibration.csv') 
+data = pd.read_csv('csv_result-Descriptors_Calibration.csv') 
 
 # Convert 'P, N' into '1, 0'
 data['class'] = data['class'].map({'P':1,'N':0})
@@ -60,7 +61,6 @@ print('Training set', X_train.shape, y_train.shape)
 print('After oversampling', Counter(y_train))
 
 # The procedure only removes noisy and ambiguous points along the class boundary
-from imblearn.under_sampling import EditedNearestNeighbours
 undersample = EditedNearestNeighbours(n_neighbors=3)
 X_train, y_train = undersample.fit_sample(X_train, y_train)
 print('After undersampling', Counter(y_train))
@@ -71,7 +71,7 @@ classifier.fit(X_train, y_train)
 
 ###################### Bagging ###########################
 from imblearn.ensemble import BalancedBaggingClassifier
-ensemble = BalancedBaggingClassifier(base_estimator=classifier, n_estimators=10,
+ensemble = BalancedBaggingClassifier(base_estimator=classifier, n_estimators=1,
                                  sampling_strategy='auto',
                                  replacement=True,
                                  random_state=42)
@@ -130,7 +130,8 @@ for i in range(0, len(svm_recall)):
     if svm_recall[i] >= 0.5:
         precision_recall_50.append(svm_precision[i])
         plt.scatter(svm_recall[i], svm_precision[i], linewidths = 0, marker = 'X', color='red')
-print('Max Pr@Re50', max(precision_recall_50))
+
+print('Max Pr@Re50', max(precision_recall_50), np.std(precision_recall_50))
 
 ###################### Evaluation ###########################
 #Goal: Maximum achievable precision at a recall of at least 50% (Pr@Re50)
@@ -144,6 +145,6 @@ print(classification_report(y_test,y_pred))
 
 ###################### Save Model ###########################
 import pickle
-f = open('classifier_anova_30_meta.pickle','wb')
-pickle.dump(classifier,f)
+f = open('svm_anova_30_meta_calibration_0327.pickle','wb')
+pickle.dump(ensemble,f)
 f.close()

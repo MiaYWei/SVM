@@ -6,11 +6,12 @@ from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import confusion_matrix, accuracy_score, classification_report, roc_curve, auc
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
+from sklearn.feature_selection import f_classif,SelectPercentile
 from imblearn.over_sampling import SVMSMOTE
+from imblearn.under_sampling import EditedNearestNeighbours
 import matplotlib.pyplot as plt
 from collections import Counter
 import seaborn as sns
-from sklearn.feature_selection import f_classif,SelectPercentile
 
 # Import the dataset
 data = pd.read_csv('data\csv_result-Descriptors_Calibration.csv') 
@@ -64,9 +65,7 @@ X_train, y_train = model_smote.fit_sample(X_train, y_train)
 print('Training set', X_train.shape, y_train.shape)
 print('After oversampling', Counter(y_train))
 
-# The procedure only removes noisy and ambiguous points along the class boundary
-from imblearn.under_sampling import EditedNearestNeighbours
-undersample = EditedNearestNeighbours(n_neighbors=3)
+undersample = EditedNearestNeighbours(n_neighbors=5)
 X_train, y_train = undersample.fit_sample(X_train, y_train)
 print('After undersampling', Counter(y_train))
 
@@ -127,7 +126,7 @@ for i in range(0, len(svm_recall)):
     if svm_recall[i] >= 0.5:
         precision_recall_50.append(svm_precision[i])
         plt.scatter(svm_recall[i], svm_precision[i], linewidths = 0, marker = 'X', color='red')
-print('Max Pr@Re50', max(precision_recall_50), np.mean(precision_recall_50), np.std(precision_recall_50))
+print('Max Pr@Re50', max(precision_recall_50), np.std(precision_recall_50))
 plt.show()
 ###################### Evaluation ###########################
 #Goal: Maximum achievable precision at a recall of at least 50% (Pr@Re50)
@@ -141,6 +140,6 @@ print(classification_report(y_test,y_pred))
 
 ###################### Save Model ###########################
 import pickle
-f = open('classifier_anova_30.pickle','wb')
+f = open('svm_anova_30.pickle','wb')
 pickle.dump(classifier,f)
 f.close()
