@@ -28,6 +28,7 @@ print(Counter(y))
 ###################### Dataset Visualization ###########################
 # visualize Methylated class
 sns.countplot(data['class'],label="Count")
+plt.title('Calibration.csv - Original Dataset')
 plt.show()
 
 ###################### Dataset Pre-processing ###########################
@@ -59,15 +60,28 @@ sc_X = StandardScaler()
 X_train = sc_X.fit_transform(X_train)
 X_test = sc_X.transform(X_test)
 
-# Resample the imbalance dataset by using SMOTE
-model_smote = SVMSMOTE(sampling_strategy='auto', n_jobs =-1, random_state=42) 
-X_train, y_train = model_smote.fit_sample(X_train, y_train) 
+print('Training Dataset', Counter(y_train))
+sns.countplot(y_train,label="Count")
+plt.title('Calibration.csv - Training Dataset - Before Resampling')
+plt.show()
+
+# Resample the imbalance dataset by using SVMSMOTE & ENN 
+oversample = SVMSMOTE(sampling_strategy='auto', n_jobs =-1, random_state=42) 
+X_train, y_train = oversample.fit_sample(X_train, y_train) 
 print('Training set', X_train.shape, y_train.shape)
-print('After oversampling', Counter(y_train))
+
+print('After SVMSMOTE', Counter(y_train))
+sns.countplot(y_train,label="Count")
+plt.title('Calibration.csv - Training Dataset - After SVMSMOTE')
+plt.show()
 
 undersample = EditedNearestNeighbours(n_neighbors=5)
 X_train, y_train = undersample.fit_sample(X_train, y_train)
-print('After undersampling', Counter(y_train))
+
+print('After SVMSMOTE & ENN', Counter(y_train))
+sns.countplot(y_train,label="Count")
+plt.title('Calibration.csv - Training Dataset - After SVMSMOTE & ENN')
+plt.show()
 
 # Train the SVM model on the training set; 
 classifier = SVC(kernel='linear', gamma=0.665, C=11.73, class_weight='balanced', probability=True, shrinking=False, cache_size=10000, verbose=True, random_state=42)
@@ -75,7 +89,7 @@ classifier.fit(X_train, y_train)
 
 ###################### Test Dataset ###########################
 # Predict the Test set results
-print('\nTest data', X_test.shape)
+print('\nTest data:', X_test.shape, Counter(y_test))
 y_pred = classifier.predict(X_test) 
 
 ######################       ROC/AUC   ###########################
@@ -102,6 +116,7 @@ svm_fpr, scm_tpr, _ = roc_curve(y_test, svm_probs)
 # plot the roc curve for the model
 plt.plot(ns_fpr, ns_tpr, linestyle='--', label='No Skill')
 plt.plot(svm_fpr, scm_tpr, marker='.', label='SVM')
+plt.title('SVM - ROC Curve')
 plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.legend()
@@ -115,31 +130,36 @@ svm_precision, svm_recall, _ = precision_recall_curve(y_test, svm_probs)
 no_skill = len(y_test[y_test==1]) / len(y_test)
 plt.plot([0, 1], [no_skill, no_skill], linestyle='--', label='No Skill')
 plt.plot(svm_recall, svm_precision, marker='.', label='SVM')
+plt.title('SVM - PR Curve')
 plt.xlabel('Recall')
 plt.ylabel('Precision')
 plt.legend()
-plt.show()
 
 # Max precision a sensitivity of 50% 
 precision_recall_50 = []
 for i in range(0, len(svm_recall)):
     if svm_recall[i] >= 0.5:
         precision_recall_50.append(svm_precision[i])
-        plt.scatter(svm_recall[i], svm_precision[i], linewidths = 0, marker = 'X', color='red')
-print('Max Pr@Re50', max(precision_recall_50), np.std(precision_recall_50))
+        plt.scatter(svm_recall[i], svm_precision[i], linewidths = 0, marker = 'X', color='green')
+#print('Maximum Pr@Re50: %4f' % max(precision_recall_50),  ' Mean: %.4f' % np.mean(precision_recall_50), ' Std: %.4f' % np.std(precision_recall_50), '\n')
+print('Maximum Pr@Re50: %4f' % max(precision_recall_50),  'Std: %.4f' % np.std(precision_recall_50), '\n')
+axes = plt.gca()
+axes.set_xlim([0,1])
+axes.set_ylim([0,0.4])
+plt.axvline(x=0.5, color='green', linestyle='dashdot')
 plt.show()
+
 ###################### Evaluation ###########################
 #Goal: Maximum achievable precision at a recall of at least 50% (Pr@Re50)
 #      The correctness of your Pr@Re50 prediction over the test dataset
-print('\nTest data', Counter(y_test))
 
 # Evaluate predictions
 tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
-print('TN =', tn, 'FP =', fp, 'FN =', fn, 'TP =', tp)
-print(classification_report(y_test,y_pred))
+print('Confusion Matrix: TN =', tn, 'FP =', fp, 'FN =', fn, 'TP =', tp)
+print('\n',classification_report(y_test,y_pred))
 
 ###################### Save Model ###########################
 import pickle
-f = open('svm_anova_30.pickle','wb')
+f = open('svm.pickle','wb')
 pickle.dump(classifier,f)
 f.close()

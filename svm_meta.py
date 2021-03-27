@@ -14,7 +14,7 @@ from collections import Counter
 import seaborn as sns
 
 # Import the dataset
-data = pd.read_csv('csv_result-Descriptors_Calibration.csv') 
+data = pd.read_csv('data\csv_result-Descriptors_Calibration.csv') 
 
 # Convert 'P, N' into '1, 0'
 data['class'] = data['class'].map({'P':1,'N':0})
@@ -79,7 +79,7 @@ ensemble.fit(X_train, y_train)
 
 ###################### Test Dataset ###########################
 # Predict the Test set results
-print('\nTest data', X_test.shape)
+print('\nTest data:', X_test.shape, Counter(y_test))
 y_pred = ensemble.predict(X_test) 
 
 ######################       ROC/AUC   ###########################
@@ -145,6 +145,6 @@ print(classification_report(y_test,y_pred))
 
 ###################### Save Model ###########################
 import pickle
-f = open('svm_anova_30_meta_calibration_0327.pickle','wb')
+f = open('svm_meta.pickle','wb')
 pickle.dump(ensemble,f)
 f.close()
