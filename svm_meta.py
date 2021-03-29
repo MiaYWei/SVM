@@ -139,8 +139,8 @@ print('\nTest data', Counter(y_test))
 
 # Evaluate predictions
 tn, fp, fn, tp = confusion_matrix(y_test, y_pred).ravel()
-print('TN =', tn, 'FP =', fp, 'FN =', fn, 'TP =', tp)
-print(classification_report(y_test,y_pred))
+print('Confusion Matrix: TN =', tn, 'FP =', fp, 'FN =', fn, 'TP =', tp)
+print('\n',classification_report(y_test,y_pred))
 
 ###################### Save Model ###########################
 import pickle
