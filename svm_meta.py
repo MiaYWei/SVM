@@ -105,6 +105,7 @@ svm_fpr, scm_tpr, _ = roc_curve(y_test, svm_probs)
 # plot the roc curve for the model
 plt.plot(ns_fpr, ns_tpr, linestyle='--', label='No Skill')
 plt.plot(svm_fpr, scm_tpr, marker='.', label='SVM')
+plt.title('Meta - ROC Curve')
 plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
 plt.legend()
@@ -118,6 +119,7 @@ svm_precision, svm_recall, _ = precision_recall_curve(y_test, svm_probs)
 no_skill = len(y_test[y_test==1]) / len(y_test)
 plt.plot([0, 1], [no_skill, no_skill], linestyle='--', label='No Skill')
 plt.plot(svm_recall, svm_precision, marker='.', label='SVM')
+plt.title('Meta - PR Curve')
 plt.xlabel('Recall')
 plt.ylabel('Precision')
 plt.legend()
@@ -130,7 +132,7 @@ for i in range(0, len(svm_recall)):
         precision_recall_50.append(svm_precision[i])
         plt.scatter(svm_recall[i], svm_precision[i], linewidths = 0, marker = 'X', color='red')
 
-print('Max Pr@Re50', max(precision_recall_50), np.std(precision_recall_50))
+print('Maximum Pr@Re50: Mean: %.4f' % np.mean(precision_recall_50), ' Std: %.4f' % np.std(precision_recall_50), '\n')
 
 ###################### Evaluation ###########################
 #Goal: Maximum achievable precision at a recall of at least 50% (Pr@Re50)
