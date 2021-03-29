@@ -139,11 +139,11 @@ for i in range(0, len(svm_recall)):
     if svm_recall[i] >= 0.5:
         precision_recall_50.append(svm_precision[i])
         plt.scatter(svm_recall[i], svm_precision[i], linewidths = 0, marker = 'X', color='green')
-#print('Maximum Pr@Re50: %4f' % max(precision_recall_50),  ' Mean: %.4f' % np.mean(precision_recall_50), ' Std: %.4f' % np.std(precision_recall_50), '\n')
-print('Maximum Pr@Re50: %4f' % max(precision_recall_50),  'Std: %.4f' % np.std(precision_recall_50), '\n')
+print('Maximum Pr@Re50: %4f' % max(precision_recall_50),  'Mean: %.4f' % np.mean(precision_recall_50), ' Std: %.4f' % np.std(precision_recall_50), '\n')
+#print('Maximum Pr@Re50: %4f' % max(precision_recall_50),  'Std: %.4f' % np.std(precision_recall_50), '\n')
 axes = plt.gca()
 axes.set_xlim([0,1])
-axes.set_ylim([0,0.4])
+axes.set_ylim([0,0.7])
 plt.axvline(x=0.5, color='green', linestyle='dashdot')
 plt.show()
 

@@ -60,9 +60,9 @@ print('After oversampling', Counter(y_train))
 
 # For meta leraning, remove ENN can increase accuracy 0.01
 # The procedure only removes noisy and ambiguous points along the class boundary  
-# undersample = EditedNearestNeighbours(n_neighbors=3)
-# X_train, y_train = undersample.fit_sample(X_train, y_train)
-# print('After undersampling', Counter(y_train))
+undersample = EditedNearestNeighbours(n_neighbors=3)
+X_train, y_train = undersample.fit_sample(X_train, y_train)
+print('After undersampling', Counter(y_train))
 
 # Train the SVM model on the training set; # C = 50, 70, and 100 has the same result.Max Pr@Re50 0.11159
 classifier = SVC(kernel='linear', gamma=2.825, C=19, class_weight='balanced', probability=True, shrinking=False, cache_size=10000, verbose=True, random_state=42)
@@ -147,3 +147,11 @@ import pickle
 f = open('svm_meta.pickle','wb')
 pickle.dump(ensemble,f)
 f.close()
+
+# evaluate model
+from sklearn.model_selection import RepeatedStratifiedKFold
+cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
+n_scores = cross_val_score(ensemble, X_train, y_train, scoring='accuracy', cv=cv, n_jobs=-1)
+# report performance
+print('Meta Accuracy: %.3f +/- %.3f' % (np.mean(n_scores), np.std(n_scores)))
+print('Meta Accuracy - max: %.3f' % np.max(n_scores))
