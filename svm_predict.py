@@ -38,7 +38,7 @@ import pickle
 filename = 'classifier_anova_30.pickle'
 loaded_model = pickle.load(open(filename, 'rb'))
 result = loaded_model.score(X_test, y)
-print(result)
+print('Prediction Accuracy', result)
 
 # Predict the Labels using the reloaded Model
 y_predict = loaded_model.predict(X_test) 
