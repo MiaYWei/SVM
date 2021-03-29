@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 from scipy import stats
-from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.model_selection import train_test_split, cross_val_score, RepeatedStratifiedKFold
 from sklearn.metrics import confusion_matrix, accuracy_score, classification_report, roc_curve, auc
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
@@ -161,3 +161,10 @@ import pickle
 f = open('svm.pickle','wb')
 pickle.dump(classifier,f)
 f.close()
+
+###################### Evaluate Model ###########################
+cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
+n_scores = cross_val_score(classifier, X_train, y_train, scoring='accuracy', cv=cv, n_jobs=-1)
+# report performance
+print('SVM Accuracy: %.3f +/- %.3f' % (np.mean(n_scores), np.std(n_scores)))
+print('SVM Accuracy - max: %.3f' % np.max(n_scores))
