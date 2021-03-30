@@ -14,7 +14,7 @@ from collections import Counter
 import seaborn as sns
 
 # Import the dataset
-data = pd.read_csv('data\csv_result-Descriptors_Calibration.csv') 
+data = pd.read_csv('dataset\csv_result-Descriptors_Calibration.csv') 
 
 # Convert 'P, N' into '1, 0'
 data['class'] = data['class'].map({'P':1,'N':0})
@@ -82,7 +82,7 @@ plt.title('Calibration.csv - Training Dataset - After SVMSMOTE & ENN')
 plt.show()
 
 # Train the SVM model on the training set; 
-classifier = SVC(kernel='linear', gamma=2.825, C=19, class_weight='balanced', probability=True, shrinking=False, cache_size=10000, verbose=True, random_state=42)
+classifier = SVC(kernel='linear', gamma=2.825, C=19, class_weight='balanced', probability=True, shrinking=False, cache_size=10000, verbose=False, random_state=42)
 classifier.fit(X_train, y_train)
 
 ###################### Test Dataset ###########################
@@ -139,7 +139,7 @@ for i in range(0, len(svm_recall)):
     if svm_recall[i] >= 0.5:
         precision_recall_50.append(svm_precision[i])
         plt.scatter(svm_recall[i], svm_precision[i], linewidths = 0, marker = 'X', color='green')
-print('Maximum Pr@Re50: %.4f' % np.mean(precision_recall_50), ' +/-: %.4f' % np.std(precision_recall_50), '\n')
+print('Maximum Pr@Re50: %.4f' % np.mean(precision_recall_50), ' +/- %.4f' % np.std(precision_recall_50), '\n')
 
 axes = plt.gca()
 axes.set_xlim([0,1])
@@ -158,12 +158,16 @@ print('\n',classification_report(y_test,y_pred))
 
 ###################### Save Model ###########################
 import pickle
-f = open('svm.pickle','wb')
+f = open('svm_xxxxx.pickle','wb')
 pickle.dump(classifier,f)
 f.close()
 
 ###################### Evaluate Model ###########################
 cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
-n_scores = cross_val_score(classifier, X_train, y_train, scoring='accuracy', cv=cv, n_jobs=-1)
+scores_accuracy = cross_val_score(classifier, X_train, y_train, scoring='accuracy', cv=cv, n_jobs=-1)
+scores_precision = cross_val_score(classifier, X_train, y_train, scoring='precision', cv=cv, n_jobs=-1)
+scores_recall = cross_val_score(classifier, X_train, y_train, scoring='recall', cv=cv, n_jobs=-1)
 # report performance
-print('SVM Accuracy: %.3f +/- %.3f' % (np.mean(n_scores), np.std(n_scores)))
+print('SVM Accuracy: %.3f +/- %.3f' % (np.mean(scores_accuracy), np.std(scores_accuracy)))
+print('SVM Precision: %.3f +/- %.3f' % (np.mean(scores_precision), np.std(scores_precision)))
+print('SVM Recall: %.3f +/- %.3f' % (np.mean(scores_recall), np.std(scores_recall)))

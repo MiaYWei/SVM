@@ -14,7 +14,7 @@ from collections import Counter
 import seaborn as sns
 
 # Import the dataset
-data = pd.read_csv('data\csv_result-Descriptors_Calibration.csv') 
+data = pd.read_csv('dataset\csv_result-Descriptors_Calibration.csv') 
 
 # Convert 'P, N' into '1, 0'
 data['class'] = data['class'].map({'P':1,'N':0})
