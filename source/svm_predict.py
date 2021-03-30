@@ -12,22 +12,24 @@ import pickle
 # Import the dataset
 data = pd.read_csv('dataset\Blind_Test_features.csv') 
 X = data.iloc[:, :]
-print(data)
 print('Original dataset', X.shape)
 
 # Select features
-X = SelectPercentile(f_classif, percentile=30).fit_transform(X, y)
-print('Select features', X.shape, )
+# mask = [0  1  1  1  1  1  1  0  1 0 0 0 0 0 0 0 0 0 0 0 0 0 0  1 0  1 0 0]
+features_selected = ['Z3_IB_4_N1', 'Z1_IB_10_N1', 'Z1_IB_5_N1', 'Z3_IB_8_N1', 'ECI_IB_4_N1', 'ECI_IB_5_N1', 'Gs(U)_IB_68_N1', 'ISA_NO_NPR_S', 'IP_NO_PLR_S']
+X_new= X[features_selected]
+print('Select features', X_new.shape)
 
 # Data Standardization
 sc_X = StandardScaler()
-X_test = sc_X.fit_transform(X)
+X_test = sc_X.fit_transform(X_new)
 
 # Load the model from disk
-filename = 'meta_train.pickle'
+filename = 'pickle\meta_train.pickle'
 loaded_model = pickle.load(open(filename, 'rb'))
 
 # Predict the Labels using the reloaded Model
 y_predict = loaded_model.predict(X_test) 
 output=pd.DataFrame(y_predict)
-output.to_csv('result_blind.csv', index = False)
+output.to_csv('prediction\\result_blind.csv', index = False)
+print('Pridection...Done')

@@ -40,7 +40,9 @@ y = y[filtered_entries]
 print('IQR', X.shape, y.shape)
 
 # Select features
-X_new = SelectPercentile(f_classif, percentile=30).fit_transform(X, y)
+sp = SelectPercentile(f_classif, percentile=30)
+X_new = sp.fit_transform(X, y)
+print(sp.get_support())
 
 ###################### Split Dataset ###########################
 X_train, X_test, y_train, y_test = train_test_split(X_new, y, test_size=0.20, random_state=101)
