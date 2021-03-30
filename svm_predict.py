@@ -29,13 +29,8 @@ sc_X = StandardScaler()
 X_test = sc_X.fit_transform(X)
 
 # load the model from disk
-# filename = 'calssifier_BBC_30.sav'
-# loaded_model = joblib.load(filename)
-# result = loaded_model.score(X_test, y)
-
-# load the model from disk
 import pickle
-filename = 'classifier_anova_30.pickle'
+filename = 'meta_cal_ENN(3).pickle'
 loaded_model = pickle.load(open(filename, 'rb'))
 result = loaded_model.score(X_test, y)
 print('Prediction Accuracy', result)
@@ -47,4 +42,4 @@ print(len(y_predict))
 print('Result', X_test.shape, y.shape)
 
 output=pd.DataFrame(y_predict)
-output.to_csv('submission.csv', index = False)
+output.to_csv('result_meta_cal_ENN(3).csv', index = False)

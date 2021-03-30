@@ -78,7 +78,6 @@ ensemble.fit(X_train, y_train)
 
 ###################### Test Dataset ###########################
 # Predict the Test set results
-print('\nTest data:', X_test.shape, Counter(y_test))
 y_pred = ensemble.predict(X_test) 
 
 ######################       ROC/AUC   ###########################
@@ -132,7 +131,7 @@ for i in range(0, len(svm_recall)):
         precision_recall_50.append(svm_precision[i])
         plt.scatter(svm_recall[i], svm_precision[i], linewidths = 0, marker = 'X', color='red')
 
-print('Maximum Pr@Re50: %.4f' % np.mean(precision_recall_50), ' +/-: %.4f' % np.std(precision_recall_50), '\n')
+print('Maximum Pr@Re50: %.4f' % np.mean(precision_recall_50), ' +/- %.4f' % np.std(precision_recall_50), '\n')
 
 ###################### Evaluation ###########################
 #Goal: Maximum achievable precision at a recall of at least 50% (Pr@Re50)
