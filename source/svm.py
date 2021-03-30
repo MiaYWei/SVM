@@ -1,7 +1,6 @@
 # Import the libraries
 import numpy as np
 import pandas as pd
-from scipy import stats
 from sklearn.model_selection import train_test_split, cross_val_score, RepeatedStratifiedKFold
 from sklearn.metrics import confusion_matrix, accuracy_score, classification_report, roc_curve, auc
 from sklearn.svm import SVC
@@ -62,7 +61,7 @@ X_test = sc_X.transform(X_test)
 
 print('Training Dataset', Counter(y_train))
 sns.countplot(y_train,label="Count")
-plt.title('Calibration.csv - Training Dataset - Before Resampling')
+plt.title('Before Resampling')
 plt.show()
 
 # Resample the imbalance dataset by using SVMSMOTE & ENN 
@@ -72,7 +71,7 @@ print('Training set', X_train.shape, y_train.shape)
 
 print('After SVMSMOTE', Counter(y_train))
 sns.countplot(y_train,label="Count")
-plt.title('Calibration.csv - Training Dataset - After SVMSMOTE')
+plt.title('After SVMSMOTE')
 plt.show()
 
 undersample = EditedNearestNeighbours(n_neighbors=5)
@@ -80,14 +79,14 @@ X_train, y_train = undersample.fit_sample(X_train, y_train)
 
 print('After SVMSMOTE & ENN', Counter(y_train))
 sns.countplot(y_train,label="Count")
-plt.title('Calibration.csv - Training Dataset - After SVMSMOTE & ENN')
+plt.title('After SVMSMOTE & ENN')
 plt.show()
 
 # Train the SVM model on the training set; 
 classifier = SVC(kernel='linear', gamma=2.825, C=19, class_weight='balanced', probability=True, shrinking=False, cache_size=10000, verbose=False, random_state=42)
 classifier.fit(X_train, y_train)
 
-###################### Test Dataset ###########################
+###################### Prediction ###########################
 # Predict the Test set results
 print('\nTest data:', X_test.shape, Counter(y_test))
 y_pred = classifier.predict(X_test) 
@@ -167,9 +166,7 @@ f.close()
 ###################### Evaluate Model ###########################
 cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
 scores_accuracy = cross_val_score(classifier, X_train, y_train, scoring='accuracy', cv=cv, n_jobs=-1)
-scores_precision = cross_val_score(classifier, X_train, y_train, scoring='precision', cv=cv, n_jobs=-1)
-scores_recall = cross_val_score(classifier, X_train, y_train, scoring='recall', cv=cv, n_jobs=-1)
+
 # report performance
+print('Maximum Pr@Re50: %.3f +/- %.3f' % np.mean(precision_recall_50), np.std(precision_recall_50), '\n')
 print('SVM Accuracy: %.3f +/- %.3f' % (np.mean(scores_accuracy), np.std(scores_accuracy)))
-print('SVM Precision: %.3f +/- %.3f' % (np.mean(scores_precision), np.std(scores_precision)))
-print('SVM Recall: %.3f +/- %.3f' % (np.mean(scores_recall), np.std(scores_recall)))

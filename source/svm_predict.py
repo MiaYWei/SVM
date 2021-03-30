@@ -25,15 +25,24 @@ filename = 'pickle\meta_train.pickle'
 loaded_model = pickle.load(open(filename, 'rb'))
 
 # Predict the labels using the reloaded Model, and save the result in csv file
+y_predict = loaded_model.predict_proba(X_test) 
+output_value=pd.DataFrame(y_predict)
+result_filename = 'prediction\\result_blind_prob.csv'
+output_value.to_csv(result_filename, index = False)
+
 y_predict = loaded_model.predict(X_test) 
 output_value=pd.DataFrame(y_predict)
 result_filename = 'prediction\\result_blind.csv'
 output_value.to_csv(result_filename, index = False)
+
 print('Pridection...Done')
 
 # Covert csv file to txt file
-value_csv_file = 'prediction\\result_blind.csv'
-value_txt_file = 'prediction\\result_blind.txt'
+prob_csv_file = 'prediction\\result_blind_prob.csv'
+prob_txt_file = 'prediction\\result_blind_prob.txt'
+
+csv_file = 'prediction\\result_blind.csv'
+txt_file = 'prediction\\result_blind.txt'
 
 def convert_csv_to_txt(sr_csv_file, des_txt_file):
     with open(des_txt_file, "w") as my_output_file:
@@ -42,4 +51,5 @@ def convert_csv_to_txt(sr_csv_file, des_txt_file):
         my_output_file.close()
     print('Convert to text...Done')
 
-convert_csv_to_txt(value_csv_file, value_txt_file)
+convert_csv_to_txt(prob_csv_file, prob_txt_file)
+convert_csv_to_txt(csv_file, txt_file)
