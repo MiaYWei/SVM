@@ -1,15 +1,11 @@
 # Import the libraries
+import numpy as np
 import pandas as pd
-import matplotlib.pyplot as plt
-from sklearn.model_selection import cross_val_score
-from sklearn.metrics import confusion_matrix, accuracy_score, classification_report
-from sklearn.svm import SVC
-from sklearn.preprocessing import StandardScaler
-from sklearn.feature_selection import f_classif, SelectPercentile
-from collections import Counter
 import pickle
+import csv
+from sklearn.preprocessing import StandardScaler
 
-# Import the dataset
+# Import the blind test dataset
 data = pd.read_csv('dataset\Blind_Test_features.csv') 
 X = data.iloc[:, :]
 print('Original dataset', X.shape)
@@ -24,12 +20,26 @@ print('Select features', X_new.shape)
 sc_X = StandardScaler()
 X_test = sc_X.fit_transform(X_new)
 
-# Load the model from disk
+# Load the Pre-trained model from disk
 filename = 'pickle\meta_train.pickle'
 loaded_model = pickle.load(open(filename, 'rb'))
 
-# Predict the Labels using the reloaded Model
+# Predict the labels using the reloaded Model, and save the result in csv file
 y_predict = loaded_model.predict(X_test) 
-output=pd.DataFrame(y_predict)
-output.to_csv('prediction\\result_blind.csv', index = False)
+output_value=pd.DataFrame(y_predict)
+result_filename = 'prediction\\result_blind.csv'
+output_value.to_csv(result_filename, index = False)
 print('Pridection...Done')
+
+# Covert csv file to txt file
+value_csv_file = 'prediction\\result_blind.csv'
+value_txt_file = 'prediction\\result_blind.txt'
+
+def convert_csv_to_txt(sr_csv_file, des_txt_file):
+    with open(des_txt_file, "w") as my_output_file:
+        with open(sr_csv_file, "r") as my_input_file:
+            [ my_output_file.write(" ".join(row)+'\n') for row in csv.reader(my_input_file)]
+        my_output_file.close()
+    print('Convert to text...Done')
+
+convert_csv_to_txt(value_csv_file, value_txt_file)
