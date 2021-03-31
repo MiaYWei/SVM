@@ -11,14 +11,14 @@ X = data.iloc[:, :]
 print('Original dataset', X.shape)
 
 # Select features
-# mask = [0  1  1  1  1  1  1  0  1 0 0 0 0 0 0 0 0 0 0 0 0 0 0  1 0  1 0 0]
+# mask = [0  1  1  1  1  1  1  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  1  0  1  0  0]
 features_selected = ['Z3_IB_4_N1', 'Z1_IB_10_N1', 'Z1_IB_5_N1', 'Z3_IB_8_N1', 'ECI_IB_4_N1', 'ECI_IB_5_N1', 'Gs(U)_IB_68_N1', 'ISA_NO_NPR_S', 'IP_NO_PLR_S']
-X_new= X[features_selected]
-print('Select features', X_new.shape)
+X= X[features_selected]
+print('Select features', X.shape)
 
 # Data Standardization
 sc_X = StandardScaler()
-X_test = sc_X.fit_transform(X_new)
+X_test = sc_X.fit_transform(X)
 
 # Load the Pre-trained model from disk
 filename = 'pickle\meta_train.pickle'
