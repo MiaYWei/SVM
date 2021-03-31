@@ -14,11 +14,17 @@ Distinguishing between the protein windows that are (‘P’ in last column) or 
 
 ## Repo Structure
 
-        ├── data
-        │   ├── csv_result-Descriptors_Calibration.csv
+        ├── dataset
+        │   ├── Blind_Test_features.csv
+		│   ├── csv_result-Descriptors_Calibration.csv
 	    │   └── csv_result-Descriptors_Training.csv
-        ├── README.md
-        ├── svm.py
-        ├── svm_parameter.py
-        ├── svm_kfold.py
-        └── svm_roc.py
+		├── prediction
+		├── progress
+        ├── source
+		│   ├── svm.py
+		│   ├── svm_hyperparameter_tuning.py
+		│   ├── svm_meta.py
+	    │   └── svm_predict.py
+        ├── submission
+        ├── trained_model
+        └── README.md
