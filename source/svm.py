@@ -25,7 +25,6 @@ print('Original dataset', X.shape, y.shape, Counter(y))
 ###################### Dataset Visualization ###########################
 # visualize Methylated class
 sns.countplot(data['class'],label="Count")
-plt.title('Calibration.csv - Original Dataset')
 plt.show()
 
 ###################### Dataset Pre-processing ###########################
