@@ -4,6 +4,7 @@ import pandas as pd
 import pickle
 import csv
 from sklearn.preprocessing import StandardScaler
+from collections import Counter
 
 # Import the blind test dataset
 data = pd.read_csv('dataset\Blind_Test_features.csv') 
@@ -31,6 +32,7 @@ result_filename = 'prediction\\result_blind_prob.csv'
 output_value.to_csv(result_filename, index = False)
 
 y_predict = loaded_model.predict(X_test) 
+print('Pridiection result:', Counter(y_predict))
 output_value=pd.DataFrame(y_predict)
 result_filename = 'prediction\\result_blind.csv'
 output_value.to_csv(result_filename, index = False)

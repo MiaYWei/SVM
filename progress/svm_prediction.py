@@ -12,7 +12,6 @@ from sklearn.feature_selection import f_classif,SelectPercentile
 data = pd.read_csv('dataset\csv_result-Descriptors_Calibration.csv') 
 # Convert 'P, N' into '1, 0'
 data['class'] = data['class'].map({'P':1,'N':0})
-
 X = data.iloc[:, 1:-1]
 y = data.iloc[:, -1]
 print('Original dataset', X.shape, y.shape)
@@ -20,7 +19,6 @@ print(Counter(y))
 
 ################### Identify and remove outliers #######################
 # Select features
-#X = SelectPercentile(f_classif, percentile=30).fit_transform(X, y)
 features_selected = ['Z3_IB_4_N1', 'Z1_IB_10_N1', 'Z1_IB_5_N1', 'Z3_IB_8_N1', 'ECI_IB_4_N1', 'ECI_IB_5_N1', 'Gs(U)_IB_68_N1', 'ISA_NO_NPR_S', 'IP_NO_PLR_S']
 X= X[features_selected]
 print('Select features', X.shape)
@@ -38,7 +36,7 @@ print(result)
 
 # Predict the Labels using the reloaded Model
 y_predict = loaded_model.predict(X_test) 
-print('Result', X_test.shape, y.shape)
+print('Pridiection result:', Counter(y_predict))
 
 output=pd.DataFrame(y_predict)
 output.to_csv('result_meta_trainXXXXXX.csv', index = False)
