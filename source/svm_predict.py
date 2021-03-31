@@ -22,7 +22,7 @@ sc_X = StandardScaler()
 X_test = sc_X.fit_transform(X)
 
 # Load the Pre-trained model from disk
-filename = 'pickle\meta_train.pickle'
+filename = 'trained_model\\final_model.pickle'
 loaded_model = pickle.load(open(filename, 'rb'))
 
 # Predict the labels using the reloaded Model, and save the result in csv file
