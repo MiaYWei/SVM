@@ -16,14 +16,14 @@ Distinguishing between the protein windows that are (‘P’ in last column) or 
 
         ├── dataset
         │   ├── Blind_Test_features.csv
-		│   ├── csv_result-Descriptors_Calibration.csv
+	    │   ├── csv_result-Descriptors_Calibration.csv
 	    │   └── csv_result-Descriptors_Training.csv
-		├── prediction
-		├── progress
+	    ├── prediction
+	    ├── progress
         ├── source
-		│   ├── svm.py
-		│   ├── svm_hyperparameter_tuning.py
-		│   ├── svm_meta.py
+	    │   ├── svm.py
+	    │   ├── svm_hyperparameter_tuning.py
+	    │   ├── svm_meta.py
 	    │   └── svm_predict.py
         ├── submission
         ├── trained_model
