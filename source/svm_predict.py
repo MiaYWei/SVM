@@ -12,9 +12,8 @@ X = data.iloc[:, :]
 print('Original dataset', X.shape)
 
 # Select features
-# mask = [0  1  1  1  1  1  1  0  1  0  0  0  0  0  0  0  0  0  0  0  0  0  0  1  0  1  0  0]
-features_selected = ['Z3_IB_4_N1', 'Z1_IB_10_N1', 'Z1_IB_5_N1', 'Z3_IB_8_N1', 'ECI_IB_4_N1', 'ECI_IB_5_N1', 'Gs(U)_IB_68_N1', 'ISA_NO_NPR_S', 'IP_NO_PLR_S']
-X= X[features_selected]
+features_train= ['Z3_IB_4_N1', 'Z1_IB_10_N1', 'Z1_IB_5_N1', 'Z3_IB_8_N1', 'Gs(U)_IB_12_N1', 'Pb_NO_sideR35_S', 'Gs(U)_NO_ALR_SI71', 'ISA_NO_NPR_S', 'IP_NO_PLR_S']
+X= X[features_train]
 print('Select features', X.shape)
 
 # Data Standardization
@@ -32,12 +31,11 @@ result_filename = 'prediction\\result_blind_prob.csv'
 output_value.to_csv(result_filename, index = False)
 
 y_predict = loaded_model.predict(X_test) 
-print('Pridiection result:', Counter(y_predict))
+print('Prediction result:', Counter(y_predict))
 output_value=pd.DataFrame(y_predict)
 result_filename = 'prediction\\result_blind.csv'
 output_value.to_csv(result_filename, index = False)
-
-print('Pridection...Done')
+print('Prediction...Done')
 
 # Covert csv file to txt file
 prob_csv_file = 'prediction\\result_blind_prob.csv'
