@@ -39,7 +39,6 @@ print('IQR', X.shape, y.shape)
 # Select features
 sp = SelectPercentile(f_classif, percentile=30)
 X_new = sp.fit_transform(X, y)
-print(sp.get_support())
 
 ###################### Split Dataset ###########################
 X_train, X_test, y_train, y_test = train_test_split(X_new, y, test_size=0.20, random_state=101)
@@ -152,6 +151,6 @@ print('Confusion Matrix: TN =', tn, 'FP =', fp, 'FN =', fn, 'TP =', tp)
 print('\n',classification_report(y_test,y_pred))
 
 # Evaluate model
-cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
-scores_accuracy = cross_val_score(classifier, X_train, y_train, scoring='accuracy', cv=cv, n_jobs=-1)
+# cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
+scores_accuracy = cross_val_score(classifier, X_train, y_train, scoring='accuracy', cv=10, n_jobs=-1)
 print('SVM Accuracy: %.3f +/- %.3f' % (np.mean(scores_accuracy), np.std(scores_accuracy)))
