@@ -23,20 +23,21 @@ y = data.iloc[:, -1]
 print('Original dataset', X.shape, y.shape, Counter(y))
 
 ###################### Dataset Pre-processing ###########################
-#Identify and remove outliers
-Q1 = X.quantile(0.25)
-Q3 = X.quantile(0.75)
+# Select features
+sp = SelectPercentile(f_classif, percentile=30)
+X = sp.fit_transform(X, y)
+print(sp.get_support())
+
+# Identify and remove outliers
+Q1, Q3 = np.percentile(X, [25, 75])
 IQR = Q3 - Q1
 filtered_entries = ((X < (Q1 - 1.5 * IQR)) |(X > (Q3 + 1.5 * IQR))).any(axis=1) 
 X = X[filtered_entries]
 y = y[filtered_entries]
 print('IQR', X.shape, y.shape)
 
-# Select features
-X_new = SelectPercentile(f_classif, percentile=30).fit_transform(X, y)
-
 ###################### Split Dataset ###########################
-X_train, X_test, y_train, y_test = train_test_split(X_new, y, test_size=0.20, random_state=101)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.20, random_state=101)
 print('Training dataset', X_train.shape, Counter(y_train))
 print('Test dataset:', X_test.shape, Counter(y_test))
 
@@ -68,16 +69,17 @@ classifier = SVC(kernel='linear', gamma=2.825, C=19, class_weight='balanced', pr
                 shrinking=False, cache_size=10000, verbose=True, random_state=42)
 
 ###################### Bagging ###########################
-ensemble = BalancedBaggingClassifier(base_estimator=classifier, n_estimators=1,
-                                    sampling_strategy='auto',
-                                    replacement=True,
-                                    random_state=42)
-ensemble.fit(X_train, y_train)
-
-# from imblearn.ensemble import RUSBoostClassifier
-# ensemble = RUSBoostClassifier(base_estimator=classifier, n_estimators=1, algorithm='SAMME.R', random_state=0)
+# ensemble = BalancedBaggingClassifier(base_estimator=classifier, n_estimators=5,
+#                                     sampling_strategy='auto',
+#                                     replacement=True,
+#                                     random_state=42)
 # ensemble.fit(X_train, y_train)
-# print("--- %s seconds ---" % (time.time() - start_time))
+
+from imblearn.ensemble import RUSBoostClassifier
+ensemble = RUSBoostClassifier(base_estimator=classifier, n_estimators=2, algorithm='SAMME.R', random_state=0)
+ensemble.fit(X_train, y_train)
+print("--- %s seconds ---" % (time.time() - start_time))
+
 ###################### Test Model ###########################
 y_pred = ensemble.predict(X_test) 
 
@@ -120,11 +122,21 @@ plt.ylabel('Precision')
 plt.legend()
 
 # Max precision at recall at least 50% 
+recall_re_greater50 = []
+min_recall = 0
 precision_recall_50 = []
+
 for i in range(0, len(svm_recall)):
-    if svm_recall[i] == 0.5:
+    if (svm_recall[i] >= 0.5) & (svm_precision[i] > 0):
+        recall_re_greater50.append(svm_recall[i])
+        plt.scatter(svm_recall[i], svm_precision[i], linewidths = 0, marker = 'X', color='green')
+for i in range(0, len(recall_re_greater50)):
+    min_recall = np.min(recall_re_greater50)
+print('min_recall %3f' % min_recall)
+
+for i in range(0, len(svm_recall)):
+    if svm_recall[i] == min_recall:
         precision_recall_50.append(svm_precision[i])
-        plt.scatter(svm_recall[i], svm_precision[i], linewidths = 0, marker = 'X', color='red')
 print('Pr@Re50: %.3f +/- %.4f' % (np.mean(precision_recall_50), np.std(precision_recall_50)), '\n')
 
 axes = plt.gca()
@@ -134,7 +146,7 @@ plt.axvline(x=0.5, color='green', linestyle='dashdot')
 plt.show()
 
 ###################### Save Model ###########################
-f = open('meta_n-3_e-1_bagging_not majority.pickle','wb')
+f = open('meta_bagging_e-5_outlier.pickle','wb')
 pickle.dump(ensemble,f)
 f.close()
 
