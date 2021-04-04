@@ -12,6 +12,7 @@ from imblearn.under_sampling import EditedNearestNeighbours
 from imblearn.ensemble import BalancedBaggingClassifier
 from collections import Counter
 import pickle
+import time
 
 # Import the dataset
 data = pd.read_csv('dataset\csv_result-Descriptors_Training.csv') 
@@ -36,6 +37,8 @@ X_new = SelectPercentile(f_classif, percentile=30).fit_transform(X, y)
 
 ###################### Split Dataset ###########################
 X_train, X_test, y_train, y_test = train_test_split(X_new, y, test_size=0.20, random_state=101)
+print('Training dataset', X_train.shape, Counter(y_train))
+print('Test dataset:', X_test.shape, Counter(y_test))
 
 ###################### Training ###########################
 # Identify outliers in the training dataset
@@ -53,7 +56,6 @@ X_test = sc_X.transform(X_test)
 # Resample the imbalance dataset by using SVMSMOTE
 model_smote = SVMSMOTE(sampling_strategy='auto', n_jobs =-1, random_state=42) 
 X_train, y_train = model_smote.fit_sample(X_train, y_train) 
-print('Training set', X_train.shape, y_train.shape)
 print('After oversampling', Counter(y_train))
 
 # The procedure only removes noisy and ambiguous points along the class boundary  
@@ -61,9 +63,9 @@ undersample = EditedNearestNeighbours(n_neighbors=3)
 X_train, y_train = undersample.fit_sample(X_train, y_train)
 print('After undersampling', Counter(y_train))
 
+start_time = time.time()
 classifier = SVC(kernel='linear', gamma=2.825, C=19, class_weight='balanced', probability=True, 
                 shrinking=False, cache_size=10000, verbose=True, random_state=42)
-classifier.fit(X_train, y_train)
 
 ###################### Bagging ###########################
 ensemble = BalancedBaggingClassifier(base_estimator=classifier, n_estimators=1,
@@ -72,8 +74,11 @@ ensemble = BalancedBaggingClassifier(base_estimator=classifier, n_estimators=1,
                                     random_state=42)
 ensemble.fit(X_train, y_train)
 
+# from imblearn.ensemble import RUSBoostClassifier
+# ensemble = RUSBoostClassifier(base_estimator=classifier, n_estimators=1, algorithm='SAMME.R', random_state=0)
+# ensemble.fit(X_train, y_train)
+# print("--- %s seconds ---" % (time.time() - start_time))
 ###################### Test Model ###########################
-print('\nTest data:', X_test.shape, Counter(y_test))
 y_pred = ensemble.predict(X_test) 
 
 ######################  ROC/AUC   ###########################
@@ -113,18 +118,23 @@ plt.title('Meta - PR Curve')
 plt.xlabel('Recall')
 plt.ylabel('Precision')
 plt.legend()
-plt.show()
 
 # Max precision at recall at least 50% 
 precision_recall_50 = []
 for i in range(0, len(svm_recall)):
-    if svm_recall[i] >= 0.5:
+    if svm_recall[i] == 0.5:
         precision_recall_50.append(svm_precision[i])
         plt.scatter(svm_recall[i], svm_precision[i], linewidths = 0, marker = 'X', color='red')
-print('Maximum Pr@Re50: %.4f' % np.mean(precision_recall_50), ' +/- %.4f' % np.std(precision_recall_50), '\n')
+print('Pr@Re50: %.3f +/- %.4f' % (np.mean(precision_recall_50), np.std(precision_recall_50)), '\n')
+
+axes = plt.gca()
+axes.set_xlim([0,1])
+axes.set_ylim([0,0.35])
+plt.axvline(x=0.5, color='green', linestyle='dashdot')
+plt.show()
 
 ###################### Save Model ###########################
-f = open('meta_train.pickle','wb')
+f = open('meta_n-3_e-1_bagging_not majority.pickle','wb')
 pickle.dump(ensemble,f)
 f.close()
 
@@ -134,6 +144,10 @@ print('Confusion Matrix: TN =', tn, 'FP =', fp, 'FN =', fn, 'TP =', tp)
 print('\n',classification_report(y_test,y_pred))
 
 # Evaluate model
-cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
-n_scores = cross_val_score(ensemble, X_train, y_train, scoring='accuracy', cv=cv, n_jobs=-1)
-print('Meta Accuracy: %.3f +/- %.3f' % (np.mean(n_scores), np.std(n_scores)))
+# cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
+scores_accuracy = cross_val_score(ensemble, X_train, y_train, scoring='accuracy', cv=10, n_jobs=-1)
+scores_precision = cross_val_score(ensemble, X_train, y_train, scoring='precision', cv=10, n_jobs=-1)
+scores_recall = cross_val_score(ensemble, X_train, y_train, scoring='recall', cv=10, n_jobs=-1)
+print('SVM Accuracy: %.3f +/- %.3f' % (np.mean(scores_accuracy), np.std(scores_accuracy)))
+print('SVM Precision: %.3f +/- %.3f' % (np.mean(scores_precision), np.std(scores_precision)))
+print('SVM Recall: %.3f +/- %.3f' % (np.mean(scores_recall), np.std(scores_recall)))
