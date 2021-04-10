@@ -2,7 +2,7 @@
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-from sklearn.model_selection import train_test_split, cross_val_score, RepeatedStratifiedKFold
+from sklearn.model_selection import train_test_split, cross_val_score
 from sklearn.metrics import confusion_matrix, accuracy_score, classification_report, roc_curve, auc, roc_auc_score, precision_recall_curve
 from sklearn.svm import SVC
 from sklearn.preprocessing import StandardScaler
@@ -131,27 +131,17 @@ plt.xlabel('Recall')
 plt.ylabel('Precision')
 plt.legend()
 
-# Max precision at recall at least 50% 
-recall_re_greater50 = []
-min_recall = 0
+# Max precision a sensitivity of 50% 
 precision_recall_50 = []
-
 for i in range(0, len(svm_recall)):
-    if (svm_recall[i] >= 0.5) & (svm_precision[i] > 0):
-        recall_re_greater50.append(svm_recall[i])
-        plt.scatter(svm_recall[i], svm_precision[i], linewidths = 0, marker = 'X', color='green')
-for i in range(0, len(recall_re_greater50)):
-    min_recall = np.min(recall_re_greater50)
-print('min_recall %3f' % min_recall)
-
-for i in range(0, len(svm_recall)):
-    if svm_recall[i] == min_recall:
+    if svm_recall[i] >= 0.5:
         precision_recall_50.append(svm_precision[i])
-print('Pr@Re50: %.3f +/- %.4f' % (np.mean(precision_recall_50), np.std(precision_recall_50)), '\n')
+        plt.scatter(svm_recall[i], svm_precision[i], linewidths = 0, marker = 'X', color='green')
+print('Pr@Re50: %4f' % np.mean(precision_recall_50), ' Std: %.4f' % np.std(precision_recall_50), '\n')
 
 axes = plt.gca()
 axes.set_xlim([0,1])
-axes.set_ylim([0,0.35])
+axes.set_ylim([0,0.4])
 plt.axvline(x=0.5, color='green', linestyle='dashdot')
 plt.show()
 
@@ -166,7 +156,6 @@ print('Confusion Matrix: TN =', tn, 'FP =', fp, 'FN =', fn, 'TP =', tp)
 print('\n',classification_report(y_test,y_pred))
 
 # Evaluate model
-#cv = RepeatedStratifiedKFold(n_splits=10, n_repeats=3, random_state=1)
 scores_accuracy = cross_val_score(classifier, X_train, y_train, scoring='accuracy', cv=10, n_jobs=-1)
 scores_precision = cross_val_score(classifier, X_train, y_train, scoring='precision', cv=10, n_jobs=-1)
 scores_recall = cross_val_score(classifier, X_train, y_train, scoring='recall', cv=10, n_jobs=-1)
