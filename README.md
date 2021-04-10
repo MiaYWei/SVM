@@ -24,7 +24,9 @@ Distinguishing between the protein windows that are (‘P’ in last column) or 
 	    │   ├── svm.py
 	    │   ├── svm_hyperparameter_tuning.py
 	    │   ├── svm_meta.py
-	    │   └── svm_predict.py
+	    │   ├── svm_predict.py	
+	    │   └── model_verification.py
         ├── submission
         ├── trained_model
+        ├── test
         └── README.md
