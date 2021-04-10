@@ -6,9 +6,9 @@ from sklearn.metrics import roc_auc_score, roc_curve, auc
 from sklearn.preprocessing import StandardScaler
 
 # Import the dataset
-#data = pd.read_csv('test\svm_training.csv') 
-data = pd.read_csv('test\\bagging_n-5_e-1.csv') 
-#data = pd.read_csv('test\\boost_n-5_e-5.csv') 
+#data = pd.read_csv('test\\svm.csv') 
+data = pd.read_csv('test\\Balancedbagging.csv') 
+#data = pd.read_csv('test\\RUSboost.csv') 
 
 data['class'] = data['class'].map({'P':1,'N':0})
 
